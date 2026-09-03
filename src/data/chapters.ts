@@ -16,6 +16,7 @@ export const CHAPTERS: ChapterContent[] = [
     number: "第1章",
     title: "你的英雄旅程展開",
     subtitle: "Your Hero Journey Begins",
+    phase: "I",
     tiers: {
       easy: {
         intro:
@@ -85,6 +86,7 @@ export const CHAPTERS: ChapterContent[] = [
     number: "第2章",
     title: "選擇你的遊戲（任務）",
     subtitle: "Choose Your Game (Mission)",
+    phase: "I",
     tiers: {
       easy: {
         intro:
@@ -137,6 +139,7 @@ export const CHAPTERS: ChapterContent[] = [
     number: "第3.1章",
     title: "認識你的屬性（天賦）",
     subtitle: "Know Your Attributes (Talents)",
+    phase: "I",
     tiers: {
       easy: {
         intro:
@@ -208,6 +211,7 @@ export const CHAPTERS: ChapterContent[] = [
     number: "第3.2章",
     title: "你的領導屬性",
     subtitle: "Your Leadership Attributes",
+    phase: "I",
     tiers: {
       easy: {
         intro: "回顧你的領導人格。寫下你的想法，並想想你的優勢過去是如何幫助你為團隊做出貢獻的。",
@@ -268,6 +272,7 @@ export const CHAPTERS: ChapterContent[] = [
     number: "第4.1章",
     title: "選擇你的角色（專長）",
     subtitle: "Select Your Role (Specialty)",
+    phase: "I",
     tiers: {
       easy: {
         intro:
@@ -332,6 +337,7 @@ export const CHAPTERS: ChapterContent[] = [
     number: "第4.2章",
     title: "你的英雄名字與英雄準則",
     subtitle: "Your Hero Name & Hero Code",
+    phase: "I",
     tiers: {
       easy: {
         intro:
@@ -414,6 +420,347 @@ export const CHAPTERS: ChapterContent[] = [
             columns: nameReplyColumns,
             rowCount: 3,
           },
+        ],
+      },
+    },
+  },
+  {
+    id: "ch5-1",
+    number: "第5.1章",
+    title: "提升你的技能（技藝）",
+    subtitle: "Enhance Your Skills (Craft)",
+    phase: "II",
+    tiers: {
+      easy: {
+        intro:
+          "找出並描繪你目前的「技能金字塔」——也就是你現有的技能。寫下你認為自己最強的五項技能（這些會構成你的「戒指技能」）。",
+        fields: [
+          { type: "list", key: "ring_skills", label: "戒指技能（前5名）", itemCount: 5 },
+          {
+            type: "list",
+            key: "base_skills",
+            label: "基座技能（其他表現在平均水準以上、但重要性稍低的技能）",
+            itemCount: 7,
+          },
+        ],
+        takeaway: "這能讓你清楚了解自己現有的優勢，以及它們目前如何塑造你的人生遊戲。",
+      },
+      medium: {
+        intro:
+          "打造你的「目標技能金字塔」，想一位已經在你渴望的角色上取得成功的「頂尖大師」，找出你為了人生遊戲需要精通的技能。",
+        fields: [
+          { type: "textarea", key: "your_name", label: "你的名字：" },
+          { type: "textarea", key: "top_target_skill", label: "頂尖目標技能（Top Target Skill）" },
+          { type: "list", key: "ring_skills", label: "戒指技能（主要技能）", itemCount: 4 },
+          { type: "list", key: "base_skills", label: "基座技能（支援技能）", itemCount: 8 },
+        ],
+        takeaway:
+          "比較你目前的技能金字塔與目標技能金字塔，能清楚看出你還需要加強或學習哪些技能。",
+      },
+      hard: {
+        intro:
+          "擬定一份行動計畫，提升你的技能，縮小目前技能金字塔與目標技能金字塔之間的差距。選出一項關鍵技能，作為未來三到六個月的優先目標。",
+        fields: [
+          { type: "textarea", key: "priority_skill", label: "選出一項未來3～6個月要優先發展的關鍵技能。" },
+          {
+            type: "textarea",
+            key: "growth_strategy",
+            label: "設計成長這項技能的策略：找一門課程、一位導師，或一個能挑戰你的專案。",
+          },
+          { type: "textarea", key: "deliberate_practice", label: "規劃每天或每週的刻意練習。" },
+          {
+            type: "textarea",
+            key: "reflection",
+            label: "反思這項技能如何補強你的其他優勢，並與你的核心屬性相互呼應。",
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: "ch5-2",
+    number: "第5.2章",
+    title: "現實人生的遊戲技能",
+    subtitle: "Real-World Game Skills",
+    phase: "II",
+    tiers: {
+      easy: {
+        intro: "檢視「現實人生遊戲技能」表，找出你已經擁有的技能並寫下來。",
+        fields: [
+          { type: "textarea", key: "owned_skills", label: "列出你已經擁有的現實人生遊戲技能。" },
+          {
+            type: "textarea",
+            key: "class",
+            label: "根據你最強的技能，你屬於哪種「職業」（戰士、法師、盜賊等）？",
+          },
+          {
+            type: "list",
+            key: "examples",
+            label: "舉例說明你曾如何運用這些技能，克服阻礙或完成一項任務。",
+            itemCount: 5,
+          },
+        ],
+      },
+      medium: {
+        intro: "找出一項你需要升級的現實人生遊戲技能，研究或找出一位在你渴望角色上表現傑出的「頂尖大師」。",
+        fields: [
+          { type: "textarea", key: "skill_to_upgrade", label: "有哪一項現實人生遊戲技能是你需要升級的？" },
+          { type: "textarea", key: "top_master", label: "你研究了哪位在你渴望角色上表現傑出的頂尖大師？" },
+          { type: "textarea", key: "master_skills", label: "這位頂尖大師精通哪些現實人生遊戲技能？" },
+          { type: "textarea", key: "most_important", label: "這些技能中，哪些對你的成長最重要？" },
+        ],
+      },
+      hard: {
+        intro:
+          "展開一場「技能任務」，在接下來四週內積極練習並精進一項關鍵的現實人生遊戲技能，並承諾進行可量化的練習計畫。",
+        fields: [
+          { type: "textarea", key: "skill_quest", label: "在接下來四週，你要精通哪一項現實人生遊戲技能？" },
+          { type: "textarea", key: "quantifiable_plan", label: "你會承諾採用什麼可量化的練習計畫？" },
+          { type: "textarea", key: "share_with", label: "你會把成果分享給誰，以取得回饋與課責？" },
+          { type: "textarea", key: "tracking", label: "你要如何在這四週追蹤自己的進度？" },
+          { type: "textarea", key: "learned", label: "在你的技能任務結束時，你對自己的成長學到了什麼？" },
+        ],
+      },
+    },
+  },
+  {
+    id: "ch6",
+    number: "第6章",
+    title: "建立你的聯盟（人脈）",
+    subtitle: "Build Your Alliance (Network)",
+    phase: "II",
+    tiers: {
+      easy: {
+        intro:
+          "找出你目前在人生遊戲中，已經加入的陣營、公會、隊伍與夥伴，寫下每個聯盟目前為止對你的遊戲做出了什麼貢獻。",
+        fields: [
+          { type: "textarea", key: "current_alliances", label: "你目前是哪些陣營、公會、隊伍或夥伴關係的一員？" },
+          { type: "textarea", key: "contribution", label: "每個聯盟目前為止對你的人生遊戲做出了什麼貢獻？" },
+        ],
+      },
+      medium: {
+        intro:
+          "採取行動，加入一個符合你目前遊戲方向的新陣營、公會或團隊。記住，展現主動積極，也是成為有價值盟友的關鍵。",
+        fields: [
+          { type: "textarea", key: "new_alliance", label: "你決定加入哪個新的陣營、公會或團隊？" },
+          { type: "textarea", key: "why_chosen", label: "你為什麼選擇這個團體？它如何與你的人生遊戲契合？" },
+          { type: "textarea", key: "first_experience", label: "你在第一次聚會或互動中的體驗如何？" },
+          { type: "textarea", key: "proactive", label: "你如何積極參與，或展現出主動積極的態度？" },
+        ],
+      },
+      hard: {
+        intro:
+          "跨出舒適圈，主動聯繫陌生人，建立新的聯盟。找出能激勵你、或可能對你的成長有幫助的人——潛在的導師、領導者或榜樣，這週寄出三則真誠、個人化的訊息，不論對方是否回覆。",
+        fields: [
+          {
+            type: "table",
+            key: "contacts",
+            label: "你決定聯繫哪三位人物（導師、領導者、榜樣）？",
+            columns: [
+              { key: "name", label: "姓名" },
+              { key: "meaning", label: "他們對你的意義" },
+            ],
+            rowCount: 3,
+          },
+          {
+            type: "table",
+            key: "admired_traits",
+            label: "你欣賞他們的哪一點？（請具體說明）",
+            columns: [{ key: "reason", label: "欣賞的地方" }],
+            rowCount: 3,
+            rowLabels: ["第一位", "第二位", "第三位"],
+          },
+          {
+            type: "table",
+            key: "messages_sent",
+            label: "你傳給他們的個人化訊息內容是什麼？",
+            columns: [{ key: "message", label: "訊息內容" }],
+            rowCount: 3,
+            rowLabels: ["第一位", "第二位", "第三位"],
+          },
+          {
+            type: "table",
+            key: "outreach_results",
+            label: "你有收到回覆嗎？對方的回覆或結果是什麼？主動出擊的感覺如何？",
+            columns: [{ key: "result", label: "結果與感受" }],
+            rowCount: 3,
+            rowLabels: ["第一位", "第二位", "第三位"],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: "ch7",
+    number: "第7章",
+    title: "建立聯盟的實戰手冊",
+    subtitle: "The Alliance Playbook",
+    phase: "II",
+    tiers: {
+      easy: {
+        intro:
+          "在你的聯絡人中，找一位你已經一段時間沒聯絡的人。主動聯繫他們，分享你正在進行「10K HP」的旅程，讓他們知道，他們一直是你人生中重要的盟友，並詢問你能如何支持他們。",
+        fields: [
+          { type: "textarea", key: "person", label: "你選擇重新聯繫的人是誰？" },
+          { type: "textarea", key: "message", label: "你傳給他們的訊息內容是什麼？" },
+          { type: "textarea", key: "response", label: "他們怎麼回應？重新建立聯繫讓你有什麼感受？" },
+        ],
+        takeaway: "這是一種簡單卻強大的方式，能重新點燃有價值的人際連結。",
+      },
+      medium: {
+        intro:
+          "找出線上可能對你的遊戲很關鍵的高階玩家。運用「刺拳、直拳、上鉤拳」技巧，在接下來四週內主動聯繫並至少跟進三次。",
+        fields: [
+          { type: "list", key: "advanced_players", label: "你找出哪些高階玩家想要連結？（列出幾個名字）", itemCount: 3 },
+          { type: "textarea", key: "jab", label: "你如何運用「刺拳」技巧？" },
+          { type: "textarea", key: "cross", label: "你如何運用「直拳」技巧？" },
+          { type: "textarea", key: "hook", label: "你如何運用「上鉤拳」技巧？" },
+          { type: "textarea", key: "response", label: "在持續跟進後，你收到了什麼樣的回應（如果有的話）？" },
+          { type: "textarea", key: "progress", label: "持續跟進之後，你們的關係有什麼進展？" },
+        ],
+        takeaway:
+          "這項練習讓你持續聯繫第6章「困難模式」中所提到的相同對象，這次確保你的努力持之以恆且前後一致。",
+      },
+      hard: {
+        intro:
+          "走進現實世界，報名參加一場能認識新朋友的當地活動。透過以下步驟征服「無害之龍」：1.有精神地眼神交流並打招呼 2.進行簡短、有意義的對話 3.表示樂意保持聯絡並收集聯絡方式 4.對盡可能多的人重複步驟1–3 5.活動後24小時內跟進聯繫 6.兩個月後再次主動聯繫，維繫關係。",
+        fields: [
+          { type: "textarea", key: "event", label: "你參加了什麼樣的當地活動？" },
+          { type: "list", key: "people_met", label: "你認識了誰？（列出一些名字或描述）", itemCount: 2 },
+          {
+            type: "textarea",
+            key: "count",
+            label: "你打招呼、進行有意義對話並收集聯絡方式的人數有多少？（填入數字）",
+          },
+          { type: "textarea", key: "followup_24h", label: "你24小時內的跟進訊息進行得如何？你說了什麼？" },
+          { type: "textarea", key: "followup_2mo", label: "兩個月後，你採取了什麼行動來維繫這些新關係？" },
+          { type: "textarea", key: "lesson", label: "透過這次經驗，你對征服「無害之龍」學到了什麼？" },
+        ],
+      },
+    },
+  },
+  {
+    id: "ch8",
+    number: "第8章",
+    title: "達成你的任務（里程碑）",
+    subtitle: "Achieve Your Quests (Milestones)",
+    phase: "II",
+    tiers: {
+      easy: {
+        intro:
+          "回顧你人生中那些對塑造今天的你，產生重大影響的「主要任務」，寫下三到五個讓你印象深刻的重要里程碑或成就。",
+        fields: [
+          { type: "list", key: "milestones", label: "列出三到五個塑造了你的主要任務（里程碑或成就）。", itemCount: 5 },
+          { type: "textarea", key: "why_important", label: "為什麼這些里程碑對你的成長很重要？" },
+          { type: "textarea", key: "lessons", label: "你從這些任務中獲得了哪些教訓或技能？" },
+        ],
+      },
+      medium: {
+        intro:
+          "找出一個你想在下個月完成的目標，並把它轉化為一個SMART的「次要任務」：具體（Specific）、可衡量（Measurable）、可達成（Achievable）、相關（Relevant）、有時限（Time-bound）。",
+        fields: [
+          { type: "textarea", key: "goal", label: "你想在下個月達成的目標是什麼？（次要任務）" },
+          { type: "textarea", key: "specific", label: "把你的目標變得具體（Specific）：" },
+          { type: "textarea", key: "measurable", label: "把你的目標變得可衡量（Measurable）：" },
+          { type: "textarea", key: "achievable", label: "把你的目標變得可達成（Achievable）：" },
+          { type: "textarea", key: "relevant", label: "把你的目標變得相關（Relevant）：" },
+          { type: "textarea", key: "time_bound", label: "把你的目標變得有時限（Time-bound）：" },
+          {
+            type: "textarea",
+            key: "reward",
+            label: "你會為達成進度里程碑設定什麼星星獎勵？（小小的獎勵，慶祝小小的勝利！）",
+          },
+          {
+            type: "textarea",
+            key: "accountability_allies",
+            label: "你會找哪兩位信任的盟友，分享你的次要任務以取得課責監督？",
+          },
+        ],
+      },
+      hard: {
+        intro:
+          "放大格局，規劃你的「五年目標」，並拆解成主要任務與次要任務。探索所需的各類任務：學習任務（獲得新技能）、聯盟任務（建立人脈）、職涯任務（提升個人形象）、健康任務（維持最佳狀態）。",
+        fields: [
+          { type: "list", key: "five_year_goals", label: "你的五年目標是什麼？（放膽去夢想！）", itemCount: 3 },
+          {
+            type: "list",
+            key: "task_breakdown",
+            label: "把每個目標拆解成更小的主要任務與次要任務。（清楚列出）",
+            itemCount: 6,
+          },
+          {
+            type: "list",
+            key: "task_categories",
+            label: "你需要完成哪些學習、聯盟、職涯與健康任務？",
+            itemCount: 4,
+          },
+          {
+            type: "list",
+            key: "timeline",
+            label: "為你的主要任務與次要任務指定時程。（請具體說明）",
+            itemCount: 5,
+          },
+          {
+            type: "textarea",
+            key: "visual_roadmap",
+            label: "描述你的視覺化路線圖。（你要如何以視覺方式追蹤你的任務？）",
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: "ch9",
+    number: "第9章",
+    title: "達成10K HP的全面對齊",
+    subtitle: "Achieving Total 10K HP Alignment",
+    phase: "II",
+    tiers: {
+      easy: {
+        intro: "回顧你目前在「10K HP」旅程六個步驟中的進度：",
+        fields: [
+          { type: "textarea", key: "right_game", label: "你正在玩對的遊戲嗎？" },
+          { type: "textarea", key: "attributes", label: "你有效理解並運用你的屬性嗎？" },
+          { type: "textarea", key: "role", label: "你確定了自己的角色了嗎？" },
+          { type: "textarea", key: "skills", label: "你正在建立並磨練你需要的技能嗎？" },
+          { type: "textarea", key: "allies", label: "你身邊圍繞著對的盟友嗎？" },
+          { type: "textarea", key: "quests", label: "你正在追求有意義且符合SMART原則的任務嗎？" },
+        ],
+      },
+      medium: {
+        intro:
+          "擬定一份行動計畫，讓你的人生遊戲完全對齊，朝「OP模式」邁進：選出你目前最失衡的兩個領域，定義具體、可執行的步驟。",
+        fields: [
+          { type: "list", key: "imbalanced_areas", label: "你覺得自己最失衡的兩個領域是什麼？", itemCount: 2 },
+          {
+            type: "list",
+            key: "action_steps",
+            label: "你會採取什麼具體、可執行的步驟，來修正每個領域？",
+            itemCount: 2,
+          },
+          {
+            type: "list",
+            key: "milestones_timeline",
+            label: "針對這些行動，你設定了什麼里程碑與時程？",
+            itemCount: 2,
+          },
+          {
+            type: "list",
+            key: "how_it_helps",
+            label: "讓這些領域重新對齊，將如何幫助你更接近「OP模式」？",
+            itemCount: 2,
+          },
+        ],
+      },
+      hard: {
+        intro:
+          "與他人合作，強化你的對齊程度，放大你的成果：找一位信任的盟友，一起面對挑戰，分享行動計畫並互相督促課責。",
+        fields: [
+          { type: "textarea", key: "accountability_ally", label: "誰是你要合作、互相課責的信任盟友？" },
+          { type: "textarea", key: "joint_steps", label: "你們會一起採取哪些步驟來強化對齊？" },
+          { type: "textarea", key: "community", label: "你會加入哪個公會、社群或支持團體，來強化你的旅程？" },
+          { type: "textarea", key: "acceleration", label: "與他人合作，會如何加速你朝「OP模式」邁進的進度？" },
+          { type: "textarea", key: "coach", label: "你會考慮找一位10K HP教練嗎？為什麼會或為什麼不會？" },
         ],
       },
     },

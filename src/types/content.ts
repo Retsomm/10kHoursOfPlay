@@ -47,10 +47,18 @@ export interface TierContent {
   takeaway?: string;
 }
 
+export type Phase = "I" | "II";
+
+export const PHASE_LABEL: Record<Phase, string> = {
+  I: "PHASE I · KNOW YOURSELF",
+  II: "PHASE II · GROW YOURSELF",
+};
+
 export interface ChapterContent {
   id: string;
   number: string;
   title: string;
   subtitle: string;
+  phase: Phase;
   tiers: Record<Tier, TierContent>;
 }
