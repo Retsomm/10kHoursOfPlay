@@ -9,11 +9,9 @@ export interface AnswerRow {
 
 export type AnswersMap = Record<string, Record<string, unknown>>;
 
-function key(chapterId: string, tier: Tier) {
-  return `${chapterId}:${tier}`;
-}
+const key = (chapterId: string, tier: Tier) => `${chapterId}:${tier}`;
 
-export function buildAnswersMap(rows: AnswerRow[]): AnswersMap {
+export const buildAnswersMap = (rows: AnswerRow[]): AnswersMap => {
   const map: AnswersMap = {};
   for (const row of rows) {
     const k = key(row.chapter_id, row.tier as Tier);
@@ -21,12 +19,12 @@ export function buildAnswersMap(rows: AnswerRow[]): AnswersMap {
     map[k][row.field_key] = row.value;
   }
   return map;
-}
+};
 
-export function getTierAnswers(
+export const getTierAnswers = (
   map: AnswersMap,
   chapterId: string,
   tier: Tier,
-): Record<string, unknown> {
+): Record<string, unknown> => {
   return map[key(chapterId, tier)] ?? {};
-}
+};

@@ -7,7 +7,7 @@ import FieldRenderer from "./fields/FieldRenderer";
 import StarRating from "./StarRating";
 import { saveDraft, submitTier } from "@/app/chapters/[chapterId]/actions";
 
-export default function TierForm({
+const TierForm = ({
   chapterId,
   tier,
   content,
@@ -19,29 +19,29 @@ export default function TierForm({
   content: TierContent;
   initialValues: Record<string, unknown>;
   completed: boolean;
-}) {
+}) => {
   const [values, setValues] = useState<Record<string, unknown>>(initialValues);
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState<"idle" | "saved" | "completed">("idle");
 
-  function setField(key: string, next: unknown) {
+  const setField = (key: string, next: unknown) => {
     setValues((prev) => ({ ...prev, [key]: next }));
     setStatus("idle");
-  }
+  };
 
-  function handleSaveDraft() {
+  const handleSaveDraft = () => {
     startTransition(async () => {
       await saveDraft(chapterId, tier, values);
       setStatus("saved");
     });
-  }
+  };
 
-  function handleComplete() {
+  const handleComplete = () => {
     startTransition(async () => {
       await submitTier(chapterId, tier, values);
       setStatus("completed");
     });
-  }
+  };
 
   return (
     <div className="panel p-6 space-y-6">
@@ -101,4 +101,6 @@ export default function TierForm({
       </div>
     </div>
   );
-}
+};
+
+export default TierForm;

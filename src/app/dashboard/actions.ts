@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export async function updateHeroName(heroName: string) {
+export const updateHeroName = async (heroName: string) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,10 +22,10 @@ export async function updateHeroName(heroName: string) {
   if (error) throw error;
 
   revalidatePath("/dashboard");
-}
+};
 
-export async function signOut() {
+export const signOut = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/login");
-}
+};

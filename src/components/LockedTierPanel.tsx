@@ -3,7 +3,7 @@ import { TIER_LABEL, TIER_STARS } from "@/types/content";
 import StarRating from "./StarRating";
 import LockIcon from "./LockIcon";
 
-export default function LockedTierPanel({ tier }: { tier: Tier }) {
+const LockedTierPanel = ({ tier }: { tier: Tier }) => {
   return (
     <div className="panel p-6 opacity-60">
       <div className="flex items-center gap-2">
@@ -16,4 +16,6 @@ export default function LockedTierPanel({ tier }: { tier: Tier }) {
       </div>
     </div>
   );
-}
+};
+
+export default LockedTierPanel;

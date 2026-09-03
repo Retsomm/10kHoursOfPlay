@@ -9,14 +9,14 @@ const SUPABASE_CONFIGURED = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 );
 
-export default function LoginPage() {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   if (!SUPABASE_CONFIGURED) return <SetupNotice />;
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
     setErrorMessage("");
@@ -33,7 +33,7 @@ export default function LoginPage() {
       return;
     }
     setStatus("sent");
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
@@ -79,4 +79,6 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;

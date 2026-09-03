@@ -5,13 +5,13 @@ import type { ChapterProgress } from "@/lib/progress";
 import { isTierCompleted, isTierUnlocked, completedTierCount } from "@/lib/progress";
 import LockIcon from "./LockIcon";
 
-export default function ChapterCard({
+const ChapterCard = ({
   chapter,
   progress,
 }: {
   chapter: ChapterContent;
   progress: ChapterProgress;
-}) {
+}) => {
   const done = completedTierCount(progress);
   const fullyComplete = done === 3;
 
@@ -58,4 +58,6 @@ export default function ChapterCard({
       </div>
     </Link>
   );
-}
+};
+
+export default ChapterCard;

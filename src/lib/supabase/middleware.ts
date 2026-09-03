@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseConfigured } from "@/lib/env";
 
-export async function updateSession(request: NextRequest) {
+export const updateSession = async (request: NextRequest) => {
   if (!supabaseConfigured()) {
     return NextResponse.next({ request });
   }
@@ -51,4 +51,4 @@ export async function updateSession(request: NextRequest) {
   }
 
   return supabaseResponse;
-}
+};

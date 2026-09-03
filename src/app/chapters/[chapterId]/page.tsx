@@ -10,11 +10,11 @@ import TierForm from "@/components/TierForm";
 import LockedTierPanel from "@/components/LockedTierPanel";
 import SetupNotice from "@/components/SetupNotice";
 
-export default async function ChapterPage({
+const ChapterPage = async ({
   params,
 }: {
   params: Promise<{ chapterId: string }>;
-}) {
+}) => {
   if (!supabaseConfigured()) return <SetupNotice />;
 
   const { chapterId } = await params;
@@ -73,4 +73,6 @@ export default async function ChapterPage({
       </div>
     </div>
   );
-}
+};
+
+export default ChapterPage;

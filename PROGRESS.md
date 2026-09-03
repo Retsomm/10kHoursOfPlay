@@ -1,5 +1,11 @@
 # 進度紀錄
 
+## 2026-09-03 — 套件管理改用 yarn、統一箭頭函式寫法
+
+- 套件管理工具從 npm 改為 yarn（`package-lock.json` 刪除、產生 `yarn.lock`），README 指令同步更新
+- 全部 `function`/`async function` 宣告改成 `const foo = () => {}` 箭頭函式寫法（元件、Server Actions、middleware、lib 工具函式全部涵蓋）
+- 重新跑過 `tsc --noEmit`、`yarn lint`、`yarn build`、dev server curl 檢查，全部通過
+
 ## 2026-09-03 — v1 骨架完成
 
 **已完成：**

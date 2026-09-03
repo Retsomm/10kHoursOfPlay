@@ -8,7 +8,7 @@ import HeroNameEditor from "@/components/HeroNameEditor";
 import SignOutButton from "@/components/SignOutButton";
 import SetupNotice from "@/components/SetupNotice";
 
-export default async function DashboardPage() {
+const DashboardPage = async () => {
   if (!supabaseConfigured()) return <SetupNotice />;
 
   const supabase = await createClient();
@@ -68,4 +68,6 @@ export default async function DashboardPage() {
       </div>
     </div>
   );
-}
+};
+
+export default DashboardPage;

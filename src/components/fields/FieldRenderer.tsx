@@ -5,7 +5,7 @@ import type { Field } from "@/types/content";
 type ListValue = string[];
 type TableValue = Record<string, string>[];
 
-export default function FieldRenderer({
+const FieldRenderer = ({
   field,
   value,
   onChange,
@@ -13,7 +13,7 @@ export default function FieldRenderer({
   field: Field;
   value: unknown;
   onChange: (next: unknown) => void;
-}) {
+}) => {
   if (field.type === "textarea") {
     const v = typeof value === "string" ? value : "";
     return (
@@ -97,4 +97,6 @@ export default function FieldRenderer({
       </div>
     </div>
   );
-}
+};
+
+export default FieldRenderer;

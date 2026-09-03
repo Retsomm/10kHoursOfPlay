@@ -418,6 +418,6 @@ export const CHAPTERS: ChapterContent[] = [
   },
 ];
 
-export function getChapter(id: string): ChapterContent | undefined {
+export const getChapter = (id: string): ChapterContent | undefined => {
   return CHAPTERS.find((c) => c.id === id);
-}
+};

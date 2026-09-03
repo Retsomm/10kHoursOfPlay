@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CHAPTERS } from "@/data/chapters";
 
-export default function Home() {
+const Home = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="max-w-5xl mx-auto w-full px-6 pt-24 pb-16 text-center">
@@ -37,4 +37,6 @@ export default function Home() {
       </section>
     </div>
   );
-}
+};
+
+export default Home;

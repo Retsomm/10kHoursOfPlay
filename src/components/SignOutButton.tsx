@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { signOut } from "@/app/dashboard/actions";
 
-export default function SignOutButton() {
+const SignOutButton = () => {
   const [isPending, startTransition] = useTransition();
   return (
     <button
@@ -15,4 +15,6 @@ export default function SignOutButton() {
       登出
     </button>
   );
-}
+};
+
+export default SignOutButton;

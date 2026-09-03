@@ -1,4 +1,4 @@
-export default function StarRating({ filled, total = 3 }: { filled: number; total?: number }) {
+const StarRating = ({ filled, total = 3 }: { filled: number; total?: number }) => {
   return (
     <span className="inline-flex gap-0.5" aria-label={`${filled} / ${total} 星`}>
       {Array.from({ length: total }).map((_, i) => (
@@ -8,4 +8,6 @@ export default function StarRating({ filled, total = 3 }: { filled: number; tota
       ))}
     </span>
   );
-}
+};
+
+export default StarRating;

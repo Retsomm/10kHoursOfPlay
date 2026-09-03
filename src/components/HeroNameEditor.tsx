@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { updateHeroName } from "@/app/dashboard/actions";
 
-export default function HeroNameEditor({ initialName }: { initialName: string }) {
+const HeroNameEditor = ({ initialName }: { initialName: string }) => {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(initialName);
   const [isPending, startTransition] = useTransition();
@@ -47,4 +47,6 @@ export default function HeroNameEditor({ initialName }: { initialName: string })
       </button>
     </div>
   );
-}
+};
+
+export default HeroNameEditor;

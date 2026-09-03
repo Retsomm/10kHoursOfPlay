@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { Tier } from "@/types/content";
 
-export async function submitTier(
+export const submitTier = async (
   chapterId: string,
   tier: Tier,
   values: Record<string, unknown>,
-) {
+) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -48,13 +48,13 @@ export async function submitTier(
 
   revalidatePath(`/chapters/${chapterId}`);
   revalidatePath("/dashboard");
-}
+};
 
-export async function saveDraft(
+export const saveDraft = async (
   chapterId: string,
   tier: Tier,
   values: Record<string, unknown>,
-) {
+) => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -81,4 +81,4 @@ export async function saveDraft(
   }
 
   revalidatePath(`/chapters/${chapterId}`);
-}
+};

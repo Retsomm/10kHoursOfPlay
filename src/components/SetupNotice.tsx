@@ -1,4 +1,4 @@
-export default function SetupNotice() {
+const SetupNotice = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="panel panel-glow max-w-md p-8 space-y-3 text-center">
@@ -13,4 +13,6 @@ export default function SetupNotice() {
       </div>
     </div>
   );
-}
+};
+
+export default SetupNotice;

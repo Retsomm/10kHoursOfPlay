@@ -9,7 +9,7 @@ export interface ProgressRow {
 export type ChapterProgress = Record<Tier, string | null>;
 export type ProgressMap = Record<string, ChapterProgress>;
 
-export function buildProgressMap(rows: ProgressRow[]): ProgressMap {
+export const buildProgressMap = (rows: ProgressRow[]): ProgressMap => {
   const map: ProgressMap = {};
   for (const row of rows) {
     if (!map[row.chapter_id]) {
@@ -18,27 +18,27 @@ export function buildProgressMap(rows: ProgressRow[]): ProgressMap {
     map[row.chapter_id][row.tier as Tier] = row.completed_at;
   }
   return map;
-}
+};
 
-export function getChapterProgress(map: ProgressMap, chapterId: string): ChapterProgress {
+export const getChapterProgress = (map: ProgressMap, chapterId: string): ChapterProgress => {
   return map[chapterId] ?? { easy: null, medium: null, hard: null };
-}
+};
 
-export function isTierUnlocked(progress: ChapterProgress, tier: Tier): boolean {
+export const isTierUnlocked = (progress: ChapterProgress, tier: Tier): boolean => {
   const index = TIERS.indexOf(tier);
   if (index === 0) return true;
   const prevTier = TIERS[index - 1];
   return Boolean(progress[prevTier]);
-}
+};
 
-export function isTierCompleted(progress: ChapterProgress, tier: Tier): boolean {
+export const isTierCompleted = (progress: ChapterProgress, tier: Tier): boolean => {
   return Boolean(progress[tier]);
-}
+};
 
-export function completedTierCount(progress: ChapterProgress): number {
+export const completedTierCount = (progress: ChapterProgress): number => {
   return TIERS.filter((t) => progress[t]).length;
-}
+};
 
-export function totalCompletedTiers(map: ProgressMap, chapterIds: string[]): number {
+export const totalCompletedTiers = (map: ProgressMap, chapterIds: string[]): number => {
   return chapterIds.reduce((sum, id) => sum + completedTierCount(getChapterProgress(map, id)), 0);
-}
+};

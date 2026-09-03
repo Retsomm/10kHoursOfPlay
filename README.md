@@ -13,8 +13,8 @@ v1 範圍：手冊 Phase I（第1章～第4.2章，共 6 個章節）。
 ## 本機開發
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 在設定好 Supabase 之前，`/login`、`/dashboard`、`/chapters/*` 會顯示「尚未設定 Supabase」的提示，`/`（首頁）可以正常瀏覽。
@@ -33,7 +33,7 @@ npm run dev
    NEXT_PUBLIC_SUPABASE_ANON_KEY=xxxxx
    ```
 
-7. 重啟 `npm run dev`，`/login` 應該可以正常寄送登入連結了。
+7. 重啟 `yarn dev`，`/login` 應該可以正常寄送登入連結了。
 
 ## 部署到 Vercel
 
