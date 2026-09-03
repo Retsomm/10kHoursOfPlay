@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Orbitron, Noto_Sans_TC } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { clerkConfigured } from "@/lib/env";
 import "./globals.css";
 
 const orbitron = Orbitron({
@@ -20,13 +22,44 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = ({ children }: LayoutProps<"/">) => {
-  return (
+  const content = (
     <html
       lang="zh-Hant"
       className={`${orbitron.variable} ${notoSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
+  );
+
+  if (!clerkConfigured()) return content;
+
+  return (
+    <ClerkProvider
+      afterSignOutUrl="/login"
+      appearance={{
+        variables: {
+          colorPrimary: "#38bdf8",
+          colorPrimaryForeground: "#04121f",
+          colorBackground: "#0d1b33",
+          colorForeground: "#e8f1fc",
+          colorMutedForeground: "#8fa6c4",
+          colorInput: "#060b18",
+          colorInputForeground: "#e8f1fc",
+        },
+        elements: {
+          socialButtonsBlockButton: {
+            backgroundColor: "#12274a",
+            borderColor: "#2f5d99",
+            color: "#e8f1fc",
+          },
+          socialButtonsBlockButtonText: {
+            color: "#e8f1fc",
+          },
+        },
+      }}
+    >
+      {content}
+    </ClerkProvider>
   );
 };
 

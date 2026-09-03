@@ -1,5 +1,67 @@
 # 進度紀錄
 
+## 目標
+
+把《10,000小時的遊戲》工作手冊做成一個網站版的「英雄角色卡」：使用者透過簡單→中等→困難
+循序解鎖的問答，逐步認識自己（Phase I）、持續成長（Phase II），資料跨裝置同步，長期用來
+記錄自我成長歷程。詳細規格見 [README.md](./README.md)。
+
+**完成的定義（v1）：**
+1. 手冊全 9 章（Phase I + Phase II）內容都能在網站上填答、存檔、跨裝置同步 ← **內容已 100% 轉錄完成，見下方章節內容比對**
+2. Google 登入（Clerk）+ 資料庫（Supabase）在正式環境（Vercel）跑起來，非本機 demo
+3. 使用者本人實際用過一輪，確認填答體驗、視覺設計沒有阻礙使用意願
+
+**目前卡在哪裡（2026-09-03）：**
+- 內容與功能骨架都做完了（12 章節、循序解鎖、存檔），本機驗證通過
+- 還沒部署到 Vercel——目前只在 `dev` 分支跑本機 dev server 測試
+- 這個 session 全程沒有瀏覽器可用（Claude in Chrome 擴充功能未連線），所有視覺／UX 判斷都是
+  使用者自己測、回報問題後我再修，不是我自己看過確認的
+
+**下一步（依序）：**
+1. 使用者完整跑過一次全部 12 章節（不只抽測），確認沒有遺漏的 bug
+2. 部署到 Vercel，設定正式環境的 Clerk／Supabase 環境變數
+3. 決定要不要開 PR 把 `dev` 合併回 `main`
+4. 之後才是「好不好用」層面的迭代（視覺調整、UX 優化），不是內容範圍的擴充——手冊內容本身
+   已經沒有更多可以加了
+
+## 2026-09-03 — Phase II 內容上線（第5～9章），Dashboard/首頁改分區顯示
+
+- 新增手冊 Phase II 全 6 章節（5.1 提升技能、5.2 現實遊戲技能、6 建立聯盟、7 聯盟實戰手冊、
+  8 達成任務／里程碑、9 全面對齊），逐字轉錄自 PDF，沿用既有的 textarea/list/table 題型引擎，
+  沒有新增任何機制——章節內容全部加在 `src/data/chapters.ts`
+- `ChapterContent` 新增 `phase: "I" | "II"` 欄位，首頁與 Dashboard 都改成依 Phase 分兩區塊顯示
+  （`PHASE I · KNOW YOURSELF` / `PHASE II · GROW YOURSELF`），見 `src/types/content.ts` 的
+  `PHASE_LABEL`
+- Dashboard 的章節卡（ChapterCard）拿掉「第X章」編號標籤，只留標題與副標
+- 本機驗證：`tsc`／`yarn lint`／`yarn build` 全過，dev server curl 確認首頁正確顯示全部 12
+  章節、兩個 Phase 標題都有出現
+- **尚未驗證**：Phase II 六章節的實際填答／存檔／解鎖流程完全沒在瀏覽器測過（跟 Phase I
+  用同一套元件，理論上行為一致，但沒有實測過就不能算數）
+- **內容完整性覆核（同日追加）**：使用者問起還有沒有題目沒轉錄，逐章逐難度（12章 × 3難度＝
+  36組）重新對照原始 PDF，確認全部題目都已轉錄，沒有遺漏。兩處刻意的結構調整（非遺漏）：
+  第1章中等難度把手冊上單一空格拆成「分數／說明」兩欄；第6章困難難度把三個重複的人物提問
+  區塊合併成帶列標籤的表格，資料量不變只是排版更緊湊。
+
+## 2026-09-03 — 登入改用 Clerk（僅 Google），Supabase 改當純資料庫
+
+**架構變更：**
+- 認證從 Supabase Auth（Magic Link）換成 Clerk，登入方式限定 Google OAuth（要在 Clerk 後台把 Email/密碼關掉，只留 Google）
+- Supabase 不再處理認證，改成純資料庫：伺服器端一律用 **service role key**（`src/lib/supabase/admin.ts`），繞過 RLS，由程式碼自己保證每次查詢都用 Clerk 的 `userId` 過濾
+- `supabase/schema.sql` 改寫：`user_id` 從 `uuid references auth.users` 改成 `text`（存 Clerk user id，如 `user_2abc...`），拿掉 `auth.uid()` 那組 RLS 政策——RLS 保持開啟但**不建立任何 policy**，等於 anon key 完全被擋在外面，只有 service role key（純伺服器端）能存取，這是刻意的安全設計，不是漏做
+- 移除：`src/lib/supabase/{client,server,middleware}.ts`、`src/app/auth/callback/route.ts`、`src/app/login/page.tsx`（Magic Link 表單）、`src/components/SignOutButton.tsx`
+- 新增：`src/app/login/[[...rest]]/page.tsx`（Clerk 官方 `<SignIn/>` 元件，catch-all 路由是 Clerk 的標準用法）、`middleware.ts` 改用 `clerkMiddleware()`
+- `src/lib/env.ts` 新增 `clerkConfigured()`／`appConfigured()`，`SetupNotice` 元件現在會分別列出缺 Clerk 還是缺 Supabase 設定
+- 環境變數全部改名：`NEXT_PUBLIC_SUPABASE_URL`/`ANON_KEY` → `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`（拿掉 `NEXT_PUBLIC_` 前綴，因為現在只有伺服器端會用到），新增 `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`/`CLERK_SECRET_KEY`
+
+**查證方式（避免用到過時的 Clerk API）：** 這次 `@clerk/nextjs` 裝到的是 7.9.0，版本比我原本記憶中的還新，`appearance.variables` 的欄位名稱（`colorForeground`/`colorInput` 而非舊的 `colorText`/`colorInputBackground`）、`UserButton` 的 `afterSignOutUrl` 已搬到 `ClerkProvider` 層級，都是查了 node_modules 裡實際的型別定義跟官方文件才確認，不是憑記憶硬寫。
+
+**本機驗證：** `tsc --noEmit`、`yarn lint`、`yarn build` 全過；dev server 在 Clerk／Supabase 金鑰都是空值時，`/`、`/login`、`/dashboard` 全部正常回 200 並顯示「尚未完成環境設定」提示，沒有噴錯。
+
+**尚未驗證（需要使用者操作）：**
+- 使用者還沒建立 Clerk 專案，Google 登入、`<SignIn/>` 元件實際畫面、OAuth 完整流程完全沒測過
+- Supabase service role key 還沒拿到，新版 schema（text user_id）還沒在使用者的 Supabase 專案上跑過
+- 這個 session 沒有瀏覽器可用，UI／RWD 沒有肉眼看過
+
 ## 2026-09-03 — 套件管理改用 yarn、統一箭頭函式寫法
 
 - 套件管理工具從 npm 改為 yarn（`package-lock.json` 刪除、產生 `yarn.lock`），README 指令同步更新

@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { CHAPTERS } from "@/data/chapters";
+import { PHASE_LABEL, type Phase } from "@/types/content";
+
+const PHASES: Phase[] = ["I", "II"];
 
 const Home = () => {
   return (
@@ -21,20 +24,21 @@ const Home = () => {
         </Link>
       </header>
 
-      <section className="max-w-5xl mx-auto w-full px-6 pb-24">
-        <p className="font-display text-xs text-dim text-center mb-6 tracking-widest">
-          PHASE I · KNOW YOURSELF
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {CHAPTERS.map((chapter) => (
-            <div key={chapter.id} className="panel p-5">
-              <p className="text-xs text-dim font-display">{chapter.number}</p>
-              <h3 className="font-bold mt-1">{chapter.title}</h3>
-              <p className="text-xs text-dim mt-1">{chapter.subtitle}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {PHASES.map((phase) => (
+        <section key={phase} className="max-w-5xl mx-auto w-full px-6 pb-16">
+          <p className="font-display text-xs text-dim text-center mb-6 tracking-widest">
+            {PHASE_LABEL[phase]}
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {CHAPTERS.filter((c) => c.phase === phase).map((chapter) => (
+              <div key={chapter.id} className="panel p-5">
+                <h3 className="font-bold">{chapter.title}</h3>
+                <p className="text-xs text-dim mt-1">{chapter.subtitle}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 };

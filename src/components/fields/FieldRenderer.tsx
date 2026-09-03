@@ -40,11 +40,11 @@ const FieldRenderer = ({
           {Array.from({ length: field.itemCount }).map((_, i) => (
             <div key={i} className="flex items-center gap-2">
               <span className="text-dim text-sm w-6 shrink-0 text-right">
-                {field.itemLabel ? "" : i + 1}
+                {field.itemLabels ? "" : i + 1}
               </span>
               <input
                 value={v[i] ?? ""}
-                placeholder={field.itemLabel ? field.itemLabel(i) : `第 ${i + 1} 項`}
+                placeholder={field.itemLabels?.[i] ?? `第 ${i + 1} 項`}
                 onChange={(e) => {
                   const next = [...v];
                   next[i] = e.target.value;
@@ -72,9 +72,9 @@ const FieldRenderer = ({
           <tbody>
             {Array.from({ length: field.rowCount }).map((_, rowIdx) => (
               <tr key={rowIdx}>
-                {field.rowLabel && (
+                {field.rowLabels && (
                   <td className="pr-3 align-top text-dim text-xs w-40 pt-2">
-                    {field.rowLabel(rowIdx)}
+                    {field.rowLabels[rowIdx]}
                   </td>
                 )}
                 {columns.map((col) => (

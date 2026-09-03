@@ -1,30 +1,41 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { supabaseConfigured } from "@/lib/env";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { UserButton } from "@clerk/nextjs";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { appConfigured } from "@/lib/env";
 import { CHAPTERS } from "@/data/chapters";
+import { PHASE_LABEL, type Phase } from "@/types/content";
 import { buildProgressMap, getChapterProgress, totalCompletedTiers } from "@/lib/progress";
 import ChapterCard from "@/components/ChapterCard";
 import HeroNameEditor from "@/components/HeroNameEditor";
 import SignOutButton from "@/components/SignOutButton";
 import SetupNotice from "@/components/SetupNotice";
 
+const PHASES: Phase[] = ["I", "II"];
+
 const DashboardPage = async () => {
-  if (!supabaseConfigured()) return <SetupNotice />;
+  if (!appConfigured()) return <SetupNotice />;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { userId } = await auth();
+  if (!userId) redirect("/login");
 
-  const [{ data: profile }, { data: progressRows }] = await Promise.all([
-    supabase.from("profiles").select("hero_name").eq("user_id", user.id).maybeSingle(),
+  const supabase = createAdminClient();
+  const [
+    { data: profile, error: profileError },
+    { data: progressRows, error: progressError },
+    user,
+  ] = await Promise.all([
+    supabase.from("profiles").select("hero_name").eq("user_id", userId).maybeSingle(),
     supabase
       .from("chapter_progress")
       .select("chapter_id, tier, completed_at")
-      .eq("user_id", user.id),
+      .eq("user_id", userId),
+    currentUser(),
   ]);
+  if (profileError) throw new Error(`讀取角色資料失敗：${profileError.message}`);
+  if (progressError) throw new Error(`讀取進度失敗：${progressError.message}`);
 
+  const defaultName = profile?.hero_name || user?.fullName || user?.username || "";
   const progressMap = buildProgressMap(progressRows ?? []);
   const chapterIds = CHAPTERS.map((c) => c.id);
   const totalTiers = chapterIds.length * 3;
@@ -34,12 +45,15 @@ const DashboardPage = async () => {
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-10">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-display text-xs text-dim">PHASE I · 認識自己</p>
+          <p className="font-display text-xs text-dim">10,000 HOURS OF PLAY</p>
           <div className="mt-2">
-            <HeroNameEditor initialName={profile?.hero_name ?? ""} />
+            <HeroNameEditor initialName={defaultName} />
           </div>
         </div>
-        <SignOutButton />
+        <div className="flex items-center gap-4">
+          <SignOutButton />
+          <UserButton />
+        </div>
       </div>
 
       <div className="panel p-5">
@@ -57,15 +71,20 @@ const DashboardPage = async () => {
         </div>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {CHAPTERS.map((chapter) => (
-          <ChapterCard
-            key={chapter.id}
-            chapter={chapter}
-            progress={getChapterProgress(progressMap, chapter.id)}
-          />
-        ))}
-      </div>
+      {PHASES.map((phase) => (
+        <div key={phase} className="space-y-4">
+          <p className="font-display text-xs text-dim tracking-widest">{PHASE_LABEL[phase]}</p>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {CHAPTERS.filter((c) => c.phase === phase).map((chapter) => (
+              <ChapterCard
+                key={chapter.id}
+                chapter={chapter}
+                progress={getChapterProgress(progressMap, chapter.id)}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

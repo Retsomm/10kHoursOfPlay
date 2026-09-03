@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@clerk/nextjs/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Tier } from "@/types/content";
 
 export const submitTier = async (
@@ -9,17 +10,13 @@ export const submitTier = async (
   tier: Tier,
   values: Record<string, unknown>,
 ) => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { userId } = await auth();
+  if (!userId) throw new Error("尚未登入");
 
-  if (!user) {
-    throw new Error("尚未登入");
-  }
+  const supabase = createAdminClient();
 
   const answerRows = Object.entries(values).map(([field_key, value]) => ({
-    user_id: user.id,
+    user_id: userId,
     chapter_id: chapterId,
     tier,
     field_key,
@@ -31,12 +28,12 @@ export const submitTier = async (
     const { error: answersError } = await supabase
       .from("answers")
       .upsert(answerRows, { onConflict: "user_id,chapter_id,tier,field_key" });
-    if (answersError) throw answersError;
+    if (answersError) throw new Error(`儲存答案失敗：${answersError.message}`);
   }
 
   const { error: progressError } = await supabase.from("chapter_progress").upsert(
     {
-      user_id: user.id,
+      user_id: userId,
       chapter_id: chapterId,
       tier,
       completed_at: new Date().toISOString(),
@@ -44,7 +41,7 @@ export const submitTier = async (
     },
     { onConflict: "user_id,chapter_id,tier" },
   );
-  if (progressError) throw progressError;
+  if (progressError) throw new Error(`更新進度失敗：${progressError.message}`);
 
   revalidatePath(`/chapters/${chapterId}`);
   revalidatePath("/dashboard");
@@ -55,17 +52,13 @@ export const saveDraft = async (
   tier: Tier,
   values: Record<string, unknown>,
 ) => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { userId } = await auth();
+  if (!userId) throw new Error("尚未登入");
 
-  if (!user) {
-    throw new Error("尚未登入");
-  }
+  const supabase = createAdminClient();
 
   const answerRows = Object.entries(values).map(([field_key, value]) => ({
-    user_id: user.id,
+    user_id: userId,
     chapter_id: chapterId,
     tier,
     field_key,
@@ -77,7 +70,7 @@ export const saveDraft = async (
     const { error } = await supabase
       .from("answers")
       .upsert(answerRows, { onConflict: "user_id,chapter_id,tier,field_key" });
-    if (error) throw error;
+    if (error) throw new Error(`儲存答案失敗：${error.message}`);
   }
 
   revalidatePath(`/chapters/${chapterId}`);

@@ -22,8 +22,7 @@ const ChapterCard = ({
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-xs text-dim font-display">{chapter.number}</p>
-          <h3 className="text-lg font-bold mt-1">{chapter.title}</h3>
+          <h3 className="text-lg font-bold">{chapter.title}</h3>
           <p className="text-xs text-dim mt-0.5">{chapter.subtitle}</p>
         </div>
         {fullyComplete && (

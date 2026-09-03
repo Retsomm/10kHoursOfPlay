@@ -1,31 +1,23 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@clerk/nextjs/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const updateHeroName = async (heroName: string) => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("尚未登入");
+  const { userId } = await auth();
+  if (!userId) throw new Error("尚未登入");
 
+  const supabase = createAdminClient();
   const { error } = await supabase.from("profiles").upsert(
     {
-      user_id: user.id,
+      user_id: userId,
       hero_name: heroName,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "user_id" },
   );
-  if (error) throw error;
+  if (error) throw new Error(`儲存英雄名字失敗：${error.message}`);
 
   revalidatePath("/dashboard");
-};
-
-export const signOut = async () => {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
 };

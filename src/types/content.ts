@@ -27,7 +27,7 @@ export interface ListField {
   key: string;
   label: string;
   itemCount: number;
-  itemLabel?: (index: number) => string;
+  itemLabels?: string[];
 }
 
 export interface TableField {
@@ -36,7 +36,7 @@ export interface TableField {
   label: string;
   columns: { key: string; label: string }[];
   rowCount: number;
-  rowLabel?: (index: number) => string;
+  rowLabels?: string[];
 }
 
 export type Field = TextareaField | ListField | TableField;
@@ -47,10 +47,18 @@ export interface TierContent {
   takeaway?: string;
 }
 
+export type Phase = "I" | "II";
+
+export const PHASE_LABEL: Record<Phase, string> = {
+  I: "PHASE I · KNOW YOURSELF",
+  II: "PHASE II · GROW YOURSELF",
+};
+
 export interface ChapterContent {
   id: string;
   number: string;
   title: string;
   subtitle: string;
+  phase: Phase;
   tiers: Record<Tier, TierContent>;
 }
