@@ -1,28 +1,27 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { supabaseConfigured } from "@/lib/env";
+import { auth } from "@clerk/nextjs/server";
+import { UserButton } from "@clerk/nextjs";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { appConfigured } from "@/lib/env";
 import { CHAPTERS } from "@/data/chapters";
 import { buildProgressMap, getChapterProgress, totalCompletedTiers } from "@/lib/progress";
 import ChapterCard from "@/components/ChapterCard";
 import HeroNameEditor from "@/components/HeroNameEditor";
-import SignOutButton from "@/components/SignOutButton";
 import SetupNotice from "@/components/SetupNotice";
 
 const DashboardPage = async () => {
-  if (!supabaseConfigured()) return <SetupNotice />;
+  if (!appConfigured()) return <SetupNotice />;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { userId } = await auth();
+  if (!userId) redirect("/login");
 
+  const supabase = createAdminClient();
   const [{ data: profile }, { data: progressRows }] = await Promise.all([
-    supabase.from("profiles").select("hero_name").eq("user_id", user.id).maybeSingle(),
+    supabase.from("profiles").select("hero_name").eq("user_id", userId).maybeSingle(),
     supabase
       .from("chapter_progress")
       .select("chapter_id, tier, completed_at")
-      .eq("user_id", user.id),
+      .eq("user_id", userId),
   ]);
 
   const progressMap = buildProgressMap(progressRows ?? []);
@@ -39,7 +38,7 @@ const DashboardPage = async () => {
             <HeroNameEditor initialName={profile?.hero_name ?? ""} />
           </div>
         </div>
-        <SignOutButton />
+        <UserButton />
       </div>
 
       <div className="panel p-5">

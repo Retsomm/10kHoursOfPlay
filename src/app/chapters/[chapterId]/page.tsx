@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { supabaseConfigured } from "@/lib/env";
+import { notFound, redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { appConfigured } from "@/lib/env";
 import { getChapter } from "@/data/chapters";
 import { TIERS } from "@/types/content";
 import { buildProgressMap, getChapterProgress, isTierUnlocked, isTierCompleted } from "@/lib/progress";
@@ -15,28 +16,26 @@ const ChapterPage = async ({
 }: {
   params: Promise<{ chapterId: string }>;
 }) => {
-  if (!supabaseConfigured()) return <SetupNotice />;
+  if (!appConfigured()) return <SetupNotice />;
 
   const { chapterId } = await params;
   const chapter = getChapter(chapterId);
   if (!chapter) notFound();
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) notFound();
+  const { userId } = await auth();
+  if (!userId) redirect("/login");
 
+  const supabase = createAdminClient();
   const [{ data: progressRows }, { data: answerRows }] = await Promise.all([
     supabase
       .from("chapter_progress")
       .select("chapter_id, tier, completed_at")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("chapter_id", chapterId),
     supabase
       .from("answers")
       .select("chapter_id, tier, field_key, value")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("chapter_id", chapterId),
   ]);
 

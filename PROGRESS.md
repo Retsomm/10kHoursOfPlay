@@ -1,5 +1,25 @@
 # 進度紀錄
 
+## 2026-09-03 — 登入改用 Clerk（僅 Google），Supabase 改當純資料庫
+
+**架構變更：**
+- 認證從 Supabase Auth（Magic Link）換成 Clerk，登入方式限定 Google OAuth（要在 Clerk 後台把 Email/密碼關掉，只留 Google）
+- Supabase 不再處理認證，改成純資料庫：伺服器端一律用 **service role key**（`src/lib/supabase/admin.ts`），繞過 RLS，由程式碼自己保證每次查詢都用 Clerk 的 `userId` 過濾
+- `supabase/schema.sql` 改寫：`user_id` 從 `uuid references auth.users` 改成 `text`（存 Clerk user id，如 `user_2abc...`），拿掉 `auth.uid()` 那組 RLS 政策——RLS 保持開啟但**不建立任何 policy**，等於 anon key 完全被擋在外面，只有 service role key（純伺服器端）能存取，這是刻意的安全設計，不是漏做
+- 移除：`src/lib/supabase/{client,server,middleware}.ts`、`src/app/auth/callback/route.ts`、`src/app/login/page.tsx`（Magic Link 表單）、`src/components/SignOutButton.tsx`
+- 新增：`src/app/login/[[...rest]]/page.tsx`（Clerk 官方 `<SignIn/>` 元件，catch-all 路由是 Clerk 的標準用法）、`middleware.ts` 改用 `clerkMiddleware()`
+- `src/lib/env.ts` 新增 `clerkConfigured()`／`appConfigured()`，`SetupNotice` 元件現在會分別列出缺 Clerk 還是缺 Supabase 設定
+- 環境變數全部改名：`NEXT_PUBLIC_SUPABASE_URL`/`ANON_KEY` → `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`（拿掉 `NEXT_PUBLIC_` 前綴，因為現在只有伺服器端會用到），新增 `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`/`CLERK_SECRET_KEY`
+
+**查證方式（避免用到過時的 Clerk API）：** 這次 `@clerk/nextjs` 裝到的是 7.9.0，版本比我原本記憶中的還新，`appearance.variables` 的欄位名稱（`colorForeground`/`colorInput` 而非舊的 `colorText`/`colorInputBackground`）、`UserButton` 的 `afterSignOutUrl` 已搬到 `ClerkProvider` 層級，都是查了 node_modules 裡實際的型別定義跟官方文件才確認，不是憑記憶硬寫。
+
+**本機驗證：** `tsc --noEmit`、`yarn lint`、`yarn build` 全過；dev server 在 Clerk／Supabase 金鑰都是空值時，`/`、`/login`、`/dashboard` 全部正常回 200 並顯示「尚未完成環境設定」提示，沒有噴錯。
+
+**尚未驗證（需要使用者操作）：**
+- 使用者還沒建立 Clerk 專案，Google 登入、`<SignIn/>` 元件實際畫面、OAuth 完整流程完全沒測過
+- Supabase service role key 還沒拿到，新版 schema（text user_id）還沒在使用者的 Supabase 專案上跑過
+- 這個 session 沒有瀏覽器可用，UI／RWD 沒有肉眼看過
+
 ## 2026-09-03 — 套件管理改用 yarn、統一箭頭函式寫法
 
 - 套件管理工具從 npm 改為 yarn（`package-lock.json` 刪除、產生 `yarn.lock`），README 指令同步更新

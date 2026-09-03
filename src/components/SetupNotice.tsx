@@ -1,15 +1,29 @@
+import { clerkConfigured, supabaseConfigured } from "@/lib/env";
+
 const SetupNotice = () => {
+  const clerkOk = clerkConfigured();
+  const supabaseOk = supabaseConfigured();
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
-      <div className="panel panel-glow max-w-md p-8 space-y-3 text-center">
-        <p className="font-display text-sm star">尚未設定 Supabase</p>
-        <p className="text-sm text-dim leading-relaxed">
-          請先在 Supabase 建立專案、跑過 <code className="text-[var(--color-accent)]">supabase/schema.sql</code>，
-          再把 Project URL 與 anon key 填進環境變數
-          <code className="text-[var(--color-accent)]"> NEXT_PUBLIC_SUPABASE_URL</code> 和
-          <code className="text-[var(--color-accent)]"> NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
-          （本機用 .env.local，Vercel 用專案的 Environment Variables）。詳見 README。
-        </p>
+      <div className="panel panel-glow max-w-md p-8 space-y-4 text-center">
+        <p className="font-display text-sm star">尚未完成環境設定</p>
+        {!clerkOk && (
+          <p className="text-sm text-dim leading-relaxed">
+            缺少 Clerk 設定：請在 <code className="text-[var(--color-accent)]">.env.local</code> 填入
+            <code className="text-[var(--color-accent)]"> NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> 與
+            <code className="text-[var(--color-accent)]"> CLERK_SECRET_KEY</code>。
+          </p>
+        )}
+        {!supabaseOk && (
+          <p className="text-sm text-dim leading-relaxed">
+            缺少 Supabase 設定：請填入
+            <code className="text-[var(--color-accent)]"> SUPABASE_URL</code> 與
+            <code className="text-[var(--color-accent)]"> SUPABASE_SERVICE_ROLE_KEY</code>
+            （在 Supabase 專案的 Settings → API 頁面）。
+          </p>
+        )}
+        <p className="text-xs text-dim">詳見 README 的設定步驟。</p>
       </div>
     </div>
   );

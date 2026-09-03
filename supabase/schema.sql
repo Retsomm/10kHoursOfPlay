@@ -1,15 +1,27 @@
 -- 10,000 Hours of Play — schema
--- Run this once in the Supabase project's SQL Editor after the project is created.
+-- Auth is handled by Clerk (not Supabase Auth), so user_id is Clerk's string
+-- user id (e.g. "user_2abc...") and all access goes through the app's server
+-- code using the Supabase service role key, which bypasses RLS. RLS stays
+-- enabled with NO policies below, so the public anon key can never read or
+-- write anything even if it were leaked — only the service role key can.
+--
+-- If tables already exist from an earlier version of this schema (uuid
+-- user_id referencing auth.users), drop them first since the column type
+-- is changing and there's no real user data to migrate yet.
 
-create table if not exists public.profiles (
-  user_id uuid primary key references auth.users (id) on delete cascade,
+drop table if exists public.answers;
+drop table if exists public.chapter_progress;
+drop table if exists public.profiles;
+
+create table public.profiles (
+  user_id text primary key,
   hero_name text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.chapter_progress (
-  user_id uuid not null references auth.users (id) on delete cascade,
+create table public.chapter_progress (
+  user_id text not null,
   chapter_id text not null,
   tier text not null check (tier in ('easy', 'medium', 'hard')),
   completed_at timestamptz,
@@ -17,8 +29,8 @@ create table if not exists public.chapter_progress (
   primary key (user_id, chapter_id, tier)
 );
 
-create table if not exists public.answers (
-  user_id uuid not null references auth.users (id) on delete cascade,
+create table public.answers (
+  user_id text not null,
   chapter_id text not null,
   tier text not null check (tier in ('easy', 'medium', 'hard')),
   field_key text not null,
@@ -30,24 +42,3 @@ create table if not exists public.answers (
 alter table public.profiles enable row level security;
 alter table public.chapter_progress enable row level security;
 alter table public.answers enable row level security;
-
-create policy "profiles: owner read" on public.profiles
-  for select using (auth.uid() = user_id);
-create policy "profiles: owner insert" on public.profiles
-  for insert with check (auth.uid() = user_id);
-create policy "profiles: owner update" on public.profiles
-  for update using (auth.uid() = user_id);
-
-create policy "chapter_progress: owner read" on public.chapter_progress
-  for select using (auth.uid() = user_id);
-create policy "chapter_progress: owner insert" on public.chapter_progress
-  for insert with check (auth.uid() = user_id);
-create policy "chapter_progress: owner update" on public.chapter_progress
-  for update using (auth.uid() = user_id);
-
-create policy "answers: owner read" on public.answers
-  for select using (auth.uid() = user_id);
-create policy "answers: owner insert" on public.answers
-  for insert with check (auth.uid() = user_id);
-create policy "answers: owner update" on public.answers
-  for update using (auth.uid() = user_id);
