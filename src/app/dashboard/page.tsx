@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { appConfigured } from "@/lib/env";
@@ -7,6 +7,7 @@ import { CHAPTERS } from "@/data/chapters";
 import { buildProgressMap, getChapterProgress, totalCompletedTiers } from "@/lib/progress";
 import ChapterCard from "@/components/ChapterCard";
 import HeroNameEditor from "@/components/HeroNameEditor";
+import SignOutButton from "@/components/SignOutButton";
 import SetupNotice from "@/components/SetupNotice";
 
 const DashboardPage = async () => {
@@ -16,14 +17,16 @@ const DashboardPage = async () => {
   if (!userId) redirect("/login");
 
   const supabase = createAdminClient();
-  const [{ data: profile }, { data: progressRows }] = await Promise.all([
+  const [{ data: profile }, { data: progressRows }, user] = await Promise.all([
     supabase.from("profiles").select("hero_name").eq("user_id", userId).maybeSingle(),
     supabase
       .from("chapter_progress")
       .select("chapter_id, tier, completed_at")
       .eq("user_id", userId),
+    currentUser(),
   ]);
 
+  const defaultName = profile?.hero_name || user?.fullName || user?.username || "";
   const progressMap = buildProgressMap(progressRows ?? []);
   const chapterIds = CHAPTERS.map((c) => c.id);
   const totalTiers = chapterIds.length * 3;
@@ -35,10 +38,13 @@ const DashboardPage = async () => {
         <div>
           <p className="font-display text-xs text-dim">PHASE I · 認識自己</p>
           <div className="mt-2">
-            <HeroNameEditor initialName={profile?.hero_name ?? ""} />
+            <HeroNameEditor initialName={defaultName} />
           </div>
         </div>
-        <UserButton />
+        <div className="flex items-center gap-4">
+          <SignOutButton />
+          <UserButton />
+        </div>
       </div>
 
       <div className="panel p-5">

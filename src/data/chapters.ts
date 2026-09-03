@@ -41,15 +41,14 @@ export const CHAPTERS: ChapterContent[] = [
               { key: "note", label: "說明 / 可能如何拖累目標" },
             ],
             rowCount: 6,
-            rowLabel: (i) =>
-              [
-                "步驟一：選擇你的遊戲（任務）",
-                "步驟二：認識你的屬性（天賦）",
-                "步驟三：選擇你的角色（專長）",
-                "步驟四：提升你的技能（技藝）",
-                "步驟五：建立你的聯盟（人脈）",
-                "步驟六：達成你的任務（里程碑）",
-              ][i],
+            rowLabels: [
+              "步驟一：選擇你的遊戲（任務）",
+              "步驟二：認識你的屬性（天賦）",
+              "步驟三：選擇你的角色（專長）",
+              "步驟四：提升你的技能（技藝）",
+              "步驟五：建立你的聯盟（人脈）",
+              "步驟六：達成你的任務（里程碑）",
+            ],
           },
         ],
         takeaway:
@@ -374,10 +373,13 @@ export const CHAPTERS: ChapterContent[] = [
             label: "核心價值",
             columns: [{ key: "note", label: "對你的意義／具體做法" }],
             rowCount: 5,
-            rowLabel: (i) =>
-              ["誠信（Integrity）", "勇氣（Courage）", "同理心（Compassion）", "創新（Innovation）", "堅持（Perseverance）"][
-                i
-              ],
+            rowLabels: [
+              "誠信（Integrity）",
+              "勇氣（Courage）",
+              "同理心（Compassion）",
+              "創新（Innovation）",
+              "堅持（Perseverance）",
+            ],
           },
           { type: "textarea", key: "mission", label: "使命（Mission）" },
           {

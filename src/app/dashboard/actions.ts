@@ -17,7 +17,7 @@ export const updateHeroName = async (heroName: string) => {
     },
     { onConflict: "user_id" },
   );
-  if (error) throw error;
+  if (error) throw new Error(`儲存英雄名字失敗：${error.message}`);
 
   revalidatePath("/dashboard");
 };

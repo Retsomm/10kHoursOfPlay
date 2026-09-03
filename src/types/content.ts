@@ -27,7 +27,7 @@ export interface ListField {
   key: string;
   label: string;
   itemCount: number;
-  itemLabel?: (index: number) => string;
+  itemLabels?: string[];
 }
 
 export interface TableField {
@@ -36,7 +36,7 @@ export interface TableField {
   label: string;
   columns: { key: string; label: string }[];
   rowCount: number;
-  rowLabel?: (index: number) => string;
+  rowLabels?: string[];
 }
 
 export type Field = TextareaField | ListField | TableField;

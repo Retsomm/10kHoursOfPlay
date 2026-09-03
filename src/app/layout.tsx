@@ -39,10 +39,22 @@ const RootLayout = ({ children }: LayoutProps<"/">) => {
       appearance={{
         variables: {
           colorPrimary: "#38bdf8",
+          colorPrimaryForeground: "#04121f",
           colorBackground: "#0d1b33",
           colorForeground: "#e8f1fc",
+          colorMutedForeground: "#8fa6c4",
           colorInput: "#060b18",
           colorInputForeground: "#e8f1fc",
+        },
+        elements: {
+          socialButtonsBlockButton: {
+            backgroundColor: "#12274a",
+            borderColor: "#2f5d99",
+            color: "#e8f1fc",
+          },
+          socialButtonsBlockButtonText: {
+            color: "#e8f1fc",
+          },
         },
       }}
     >
