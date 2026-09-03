@@ -5,22 +5,18 @@
 -- enabled with NO policies below, so the public anon key can never read or
 -- write anything even if it were leaked — only the service role key can.
 --
--- If tables already exist from an earlier version of this schema (uuid
--- user_id referencing auth.users), drop them first since the column type
--- is changing and there's no real user data to migrate yet.
+-- Idempotent: safe to run again (e.g. on a fresh environment) — every
+-- statement is a no-op if the table/setting already exists, so it never
+-- drops or overwrites existing rows.
 
-drop table if exists public.answers;
-drop table if exists public.chapter_progress;
-drop table if exists public.profiles;
-
-create table public.profiles (
+create table if not exists public.profiles (
   user_id text primary key,
   hero_name text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
-create table public.chapter_progress (
+create table if not exists public.chapter_progress (
   user_id text not null,
   chapter_id text not null,
   tier text not null check (tier in ('easy', 'medium', 'hard')),
@@ -29,7 +25,7 @@ create table public.chapter_progress (
   primary key (user_id, chapter_id, tier)
 );
 
-create table public.answers (
+create table if not exists public.answers (
   user_id text not null,
   chapter_id text not null,
   tier text not null check (tier in ('easy', 'medium', 'hard')),

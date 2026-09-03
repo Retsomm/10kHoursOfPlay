@@ -35,7 +35,7 @@ yarn dev
 ## 設定 Supabase（資料庫，跨裝置同步）
 
 1. 到 [supabase.com](https://supabase.com) 建立一個新專案（免費方案即可）。
-2. 進到專案的 SQL Editor，貼上並執行 [`supabase/schema.sql`](./supabase/schema.sql)（建立 `profiles`／`chapter_progress`／`answers` 三張表）。這個 schema 開頭有 `drop table if exists`，如果你先前跑過舊版（uuid + RLS 那版）也可以直接重跑。
+2. 進到專案的 SQL Editor，貼上並執行 [`supabase/schema.sql`](./supabase/schema.sql)（建立 `profiles`／`chapter_progress`／`answers` 三張表）。這個 schema 全部用 `create table if not exists`，是冪等的（idempotent）——重複執行不會清空既有資料，只有第一次真的會建表。**它不會幫你做結構變更**：如果之後要改欄位型別或加欄位，要另外寫 `alter table` 遷移語句，不能靠重跑這份 schema。
 3. 到 Settings → API，複製 **Project URL** 與 **service_role secret key**（不是 anon key——這把 key 會繞過 RLS，只能在伺服器端用，絕對不要加 `NEXT_PUBLIC_` 前綴、不要出現在任何會送到瀏覽器的程式碼裡）。
 4. 填進 `.env.local`：
 

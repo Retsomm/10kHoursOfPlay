@@ -17,7 +17,11 @@ const DashboardPage = async () => {
   if (!userId) redirect("/login");
 
   const supabase = createAdminClient();
-  const [{ data: profile }, { data: progressRows }, user] = await Promise.all([
+  const [
+    { data: profile, error: profileError },
+    { data: progressRows, error: progressError },
+    user,
+  ] = await Promise.all([
     supabase.from("profiles").select("hero_name").eq("user_id", userId).maybeSingle(),
     supabase
       .from("chapter_progress")
@@ -25,6 +29,8 @@ const DashboardPage = async () => {
       .eq("user_id", userId),
     currentUser(),
   ]);
+  if (profileError) throw new Error(`讀取角色資料失敗：${profileError.message}`);
+  if (progressError) throw new Error(`讀取進度失敗：${progressError.message}`);
 
   const defaultName = profile?.hero_name || user?.fullName || user?.username || "";
   const progressMap = buildProgressMap(progressRows ?? []);

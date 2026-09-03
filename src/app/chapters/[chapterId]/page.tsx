@@ -26,7 +26,10 @@ const ChapterPage = async ({
   if (!userId) redirect("/login");
 
   const supabase = createAdminClient();
-  const [{ data: progressRows }, { data: answerRows }] = await Promise.all([
+  const [
+    { data: progressRows, error: progressError },
+    { data: answerRows, error: answersError },
+  ] = await Promise.all([
     supabase
       .from("chapter_progress")
       .select("chapter_id, tier, completed_at")
@@ -38,6 +41,8 @@ const ChapterPage = async ({
       .eq("user_id", userId)
       .eq("chapter_id", chapterId),
   ]);
+  if (progressError) throw new Error(`讀取進度失敗：${progressError.message}`);
+  if (answersError) throw new Error(`讀取答案失敗：${answersError.message}`);
 
   const progressMap = buildProgressMap(progressRows ?? []);
   const progress = getChapterProgress(progressMap, chapterId);
