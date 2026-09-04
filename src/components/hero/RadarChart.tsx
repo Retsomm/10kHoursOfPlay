@@ -1,13 +1,16 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import type { RadarAxis } from "@/lib/heroStatus";
 
-const SIZE = 340;
-const CENTER = SIZE / 2;
-const MAX_RADIUS = 95;
-const LABEL_OFFSET = 16;
+const MAX_RADIUS_RATIO = 0.24; // 相對於實際量到的寬度，反推半徑，確保任何欄寬下文字都不會被裁到
+const LABEL_OFFSET = 12;
+const LABEL_FONT_SIZE = 12;
+const MARKER_R = 3.5;
 
-const pointAt = (radius: number, angle: number) => ({
-  x: CENTER + radius * Math.cos(angle),
-  y: CENTER + radius * Math.sin(angle),
+const pointAt = (center: number, radius: number, angle: number) => ({
+  x: center + radius * Math.cos(angle),
+  y: center + radius * Math.sin(angle),
 });
 
 const anchorFor = (angle: number): "start" | "middle" | "end" => {
@@ -30,6 +33,20 @@ const RadarChart = ({
   color?: string;
   emptyHint?: string;
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState<number | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width;
+      if (w) setWidth(w);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const n = axes.length;
   const hasData = axes.some((a) => a.value > 0);
 
@@ -37,77 +54,81 @@ const RadarChart = ({
 
   const angleFor = (i: number) => -Math.PI / 2 + (2 * Math.PI * i) / n;
 
-  const gridLevels = Array.from({ length: max }, (_, i) => i + 1);
-  const dataPoints = axes.map((axis, i) => pointAt((axis.value / max) * MAX_RADIUS, angleFor(i)));
-  const dataPath = dataPoints.map((p) => `${p.x},${p.y}`).join(" ");
-
   return (
-    <div className="min-w-0 space-y-1">
-      <p className="font-display text-xs text-dim tracking-widest">{title}</p>
-      <svg
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
-        role="img"
-        aria-label={`${title}：${axes.map((a) => `${a.label} ${a.value}/${max}`).join("、")}`}
-        className="block w-full max-w-[300px] mx-auto"
-      >
-        <title>{title}</title>
-        {gridLevels.map((level) => {
-          const radius = (level / max) * MAX_RADIUS;
-          const ringPoints = Array.from({ length: n }, (_, i) => pointAt(radius, angleFor(i)))
-            .map((p) => `${p.x},${p.y}`)
-            .join(" ");
+    <div ref={containerRef} className="min-w-0 space-y-1">
+      <p className="font-display text-sm text-dim tracking-widest">{title}</p>
+
+      {width !== null &&
+        (() => {
+          const size = width;
+          const center = size / 2;
+          const maxRadius = size * MAX_RADIUS_RATIO;
+          const gridLevels = Array.from({ length: max }, (_, i) => i + 1);
+          const dataPoints = axes.map((axis, i) => pointAt(center, (axis.value / max) * maxRadius, angleFor(i)));
+          const dataPath = dataPoints.map((p) => `${p.x},${p.y}`).join(" ");
+
           return (
-            <polygon
-              key={level}
-              points={ringPoints}
-              fill="none"
-              stroke="var(--color-border)"
-              strokeWidth={1}
-            />
-          );
-        })}
-
-        {axes.map((_, i) => {
-          const outer = pointAt(MAX_RADIUS, angleFor(i));
-          return (
-            <line
-              key={i}
-              x1={CENTER}
-              y1={CENTER}
-              x2={outer.x}
-              y2={outer.y}
-              stroke="var(--color-border)"
-              strokeWidth={1}
-            />
-          );
-        })}
-
-        {hasData && (
-          <polygon points={dataPath} fill={color} fillOpacity={0.22} stroke={color} strokeWidth={2} />
-        )}
-
-        {hasData &&
-          dataPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={3.5} fill={color} />)}
-
-        {axes.map((axis, i) => {
-          const labelPoint = pointAt(MAX_RADIUS + LABEL_OFFSET, angleFor(i));
-          return (
-            <text
-              key={axis.key}
-              x={labelPoint.x}
-              y={labelPoint.y}
-              textAnchor={anchorFor(angleFor(i))}
-              dominantBaseline="middle"
-              fontSize={10}
-              fill="var(--color-text-dim)"
+            <svg
+              viewBox={`0 0 ${size} ${size}`}
+              role="img"
+              aria-label={`${title}：${axes.map((a) => `${a.label} ${a.value}/${max}`).join("、")}`}
+              className="block w-full"
             >
-              {axis.label} {axis.value}
-            </text>
+              <title>{title}</title>
+              {gridLevels.map((level) => {
+                const radius = (level / max) * maxRadius;
+                const ringPoints = Array.from({ length: n }, (_, i) => pointAt(center, radius, angleFor(i)))
+                  .map((p) => `${p.x},${p.y}`)
+                  .join(" ");
+                return (
+                  <polygon key={level} points={ringPoints} fill="none" stroke="var(--color-border)" strokeWidth={1} />
+                );
+              })}
+
+              {axes.map((_, i) => {
+                const outer = pointAt(center, maxRadius, angleFor(i));
+                return (
+                  <line
+                    key={i}
+                    x1={center}
+                    y1={center}
+                    x2={outer.x}
+                    y2={outer.y}
+                    stroke="var(--color-border)"
+                    strokeWidth={1}
+                  />
+                );
+              })}
+
+              {hasData && (
+                <polygon points={dataPath} fill={color} fillOpacity={0.22} stroke={color} strokeWidth={2} />
+              )}
+
+              {hasData &&
+                dataPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={MARKER_R} fill={color} />)}
+
+              {axes.map((axis, i) => {
+                const labelPoint = pointAt(center, maxRadius + LABEL_OFFSET, angleFor(i));
+                return (
+                  <text
+                    key={axis.key}
+                    x={labelPoint.x}
+                    y={labelPoint.y}
+                    textAnchor={anchorFor(angleFor(i))}
+                    dominantBaseline="middle"
+                    fontSize={LABEL_FONT_SIZE}
+                    fill="var(--color-text-dim)"
+                  >
+                    {axis.label} {axis.value}
+                  </text>
+                );
+              })}
+            </svg>
           );
-        })}
-      </svg>
-      <p className="text-[10px] text-dim text-center">每軸滿分 {max} 分</p>
-      {!hasData && emptyHint && <p className="text-xs text-dim text-center">{emptyHint}</p>}
+        })()}
+
+      <p className="text-sm text-dim text-center">每軸滿分 {max} 分</p>
+      {!hasData && emptyHint && <p className="text-sm text-dim text-center">{emptyHint}</p>}
     </div>
   );
 };

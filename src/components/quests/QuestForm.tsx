@@ -63,14 +63,14 @@ const QuestForm = ({ prefill }: { prefill: { title: string; reward: string } }) 
   return (
     <div className="panel p-5 min-w-0 space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="font-display text-xs text-dim tracking-widest">新增任務</p>
+        <p className="font-display text-sm text-dim tracking-widest">新增任務</p>
         {(prefill.title || prefill.reward) && (
           <button
             type="button"
             onClick={applyPrefill}
-            className="text-xs text-[var(--color-accent)] hover:underline shrink-0"
+            className="text-sm text-[var(--color-accent)] hover:underline shrink-0"
           >
-            從第8章次要任務帶入
+帶入先前設定的次要任務目標
           </button>
         )}
       </div>
@@ -138,7 +138,7 @@ const QuestForm = ({ prefill }: { prefill: { title: string; reward: string } }) 
         >
           取消
         </button>
-        {isPending && <span className="text-xs text-dim">處理中…</span>}
+        {isPending && <span className="text-sm text-dim">處理中…</span>}
       </div>
     </div>
   );

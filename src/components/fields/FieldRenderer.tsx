@@ -136,7 +136,7 @@ const FieldRenderer = ({
                   />
                 </div>
                 {needsRelationship && (
-                  <p className="text-xs" style={{ color: "var(--color-danger)" }}>
+                  <p className="text-sm" style={{ color: "var(--color-danger)" }}>
                     請選擇類型，否則這筆不會顯示在英雄狀態的聯盟名冊裡
                   </p>
                 )}
@@ -163,7 +163,7 @@ const FieldRenderer = ({
             {Array.from({ length: field.rowCount }).map((_, rowIdx) => (
               <tr key={rowIdx}>
                 {field.rowLabels && (
-                  <td className="pr-3 align-top text-dim text-xs w-40 pt-2">
+                  <td className="pr-3 align-top text-dim text-sm w-40 pt-2">
                     {field.rowLabels[rowIdx]}
                   </td>
                 )}

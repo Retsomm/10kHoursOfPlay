@@ -44,7 +44,8 @@ export const submitTier = async (
   if (progressError) throw new Error(`更新進度失敗：${progressError.message}`);
 
   revalidatePath(`/chapters/${chapterId}`);
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
+  revalidatePath("/dashboard/journey");
 };
 
 export const saveDraft = async (
@@ -74,4 +75,6 @@ export const saveDraft = async (
   }
 
   revalidatePath(`/chapters/${chapterId}`);
+  revalidatePath("/dashboard/profile");
+  revalidatePath("/dashboard/journey");
 };

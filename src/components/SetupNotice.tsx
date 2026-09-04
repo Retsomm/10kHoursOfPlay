@@ -23,7 +23,7 @@ const SetupNotice = () => {
             （在 Supabase 專案的 Settings → API 頁面）。
           </p>
         )}
-        <p className="text-xs text-dim">詳見 README 的設定步驟。</p>
+        <p className="text-sm text-dim">詳見 README 的設定步驟。</p>
       </div>
     </div>
   );

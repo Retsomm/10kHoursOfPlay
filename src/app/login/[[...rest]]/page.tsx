@@ -8,7 +8,7 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6 px-6 min-w-0">
       <div className="text-center">
-        <p className="font-display text-xs star tracking-widest">10,000</p>
+        <p className="font-display text-sm star tracking-widest">10,000</p>
         <h1 className="font-display text-xl font-bold mt-1">HOURS OF PLAY</h1>
         <p className="text-sm text-dim mt-2">登入以建立你的英雄角色卡</p>
       </div>

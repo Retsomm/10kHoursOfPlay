@@ -10,6 +10,23 @@ const nameSharedColumns = [
   { key: "shared", label: "已分享" },
 ];
 
+// 給地圖、連結文字這類不該暴露書本章節編號的場合用的短名詞——
+// 讓沒讀過書的訪客也看得懂這一站在講什麼，不用先知道「第幾章」。
+export const CHAPTER_SHORT_LABEL: Record<string, string> = {
+  "ch1": "英雄覺醒",
+  "ch2": "選擇使命",
+  "ch3-1": "天賦",
+  "ch3-2": "領導風格",
+  "ch4-1": "角色定位",
+  "ch4-2": "英雄準則",
+  "ch5-1": "技能",
+  "ch5-2": "職業技能",
+  "ch6": "建立聯盟",
+  "ch7": "聯盟實戰",
+  "ch8": "任務里程碑",
+  "ch9": "全面對齊",
+};
+
 export const CHAPTERS: ChapterContent[] = [
   {
     id: "ch1",

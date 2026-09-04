@@ -11,10 +11,10 @@ const LEVEL_DESCRIPTION: Record<HeroLevel, string> = {
 const HeroLevelBadge = ({ info }: { info: HeroLevelInfo }) => {
   return (
     <div className="panel p-5 min-w-0 flex flex-col items-center justify-center text-center gap-2 panel-glow">
-      <p className="font-display text-xs text-dim tracking-widest">目前等級</p>
+      <p className="font-display text-sm text-dim tracking-widest">目前等級</p>
       <p className="font-display text-2xl font-black star">{HERO_LEVEL_LABEL[info.level]}</p>
-      <p className="text-xs text-dim">{LEVEL_DESCRIPTION[info.level]}</p>
-      <p className="text-xs text-dim">
+      <p className="text-sm text-dim">{LEVEL_DESCRIPTION[info.level]}</p>
+      <p className="text-sm text-dim">
         {info.totalCompleted} / {info.totalTiers} 關卡
         {info.phase1Complete && info.level !== "opHero" ? "・Phase I 已全通" : ""}
       </p>

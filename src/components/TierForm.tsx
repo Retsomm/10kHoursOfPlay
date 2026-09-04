@@ -51,7 +51,7 @@ const TierForm = ({
           <StarRating filled={TIER_STARS[tier]} />
         </div>
         {completed && (
-          <span className="text-xs px-2 py-1 rounded-full border border-[var(--color-success)] text-[var(--color-success)]">
+          <span className="text-sm px-2 py-1 rounded-full border border-[var(--color-success)] text-[var(--color-success)]">
             已完成
           </span>
         )}
@@ -72,7 +72,7 @@ const TierForm = ({
 
       {content.takeaway && (
         <div className="rounded-lg border border-[var(--color-border-bright)] bg-black/20 p-4 text-sm text-dim">
-          <p className="font-display text-xs star mb-1">這樣做對你有什麼幫助？</p>
+          <p className="font-display text-sm star mb-1">這樣做對你有什麼幫助？</p>
           {content.takeaway}
         </div>
       )}
@@ -94,9 +94,9 @@ const TierForm = ({
         >
           {completed ? "更新並保持完成" : "完成並解鎖下一關"}
         </button>
-        {status === "saved" && <span className="text-xs text-dim">已儲存草稿</span>}
+        {status === "saved" && <span className="text-sm text-dim">已儲存草稿</span>}
         {status === "completed" && (
-          <span className="text-xs text-[var(--color-success)]">已完成！</span>
+          <span className="text-sm text-[var(--color-success)]">已完成！</span>
         )}
       </div>
     </div>

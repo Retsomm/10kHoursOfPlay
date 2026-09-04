@@ -19,5 +19,5 @@ export const updateHeroName = async (heroName: string) => {
   );
   if (error) throw new Error(`儲存英雄名字失敗：${error.message}`);
 
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
 };
