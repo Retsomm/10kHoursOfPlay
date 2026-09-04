@@ -17,6 +17,7 @@ import {
   extractPyramid,
   extractSkillWeb,
 } from "@/lib/heroStatus";
+import { computeQuestCounts, isMissingQuestsTableError, type Quest } from "@/lib/quests";
 import ChapterCard from "@/components/ChapterCard";
 import HeroNameEditor from "@/components/HeroNameEditor";
 import SignOutButton from "@/components/SignOutButton";
@@ -27,6 +28,7 @@ import AlignmentRadar from "@/components/hero/AlignmentRadar";
 import SkillWebRadar from "@/components/hero/SkillWebRadar";
 import AllianceRoster from "@/components/hero/AllianceRoster";
 import JourneyTimeline from "@/components/hero/JourneyTimeline";
+import QuestSummaryCard from "@/components/hero/QuestSummaryCard";
 
 const PHASES: Phase[] = ["I", "II"];
 
@@ -41,6 +43,7 @@ const DashboardPage = async () => {
     { data: profile, error: profileError },
     { data: progressRows, error: progressError },
     { data: answerRows, error: answersError },
+    { data: quests, error: questsError },
     user,
   ] = await Promise.all([
     supabase.from("profiles").select("hero_name").eq("user_id", userId).maybeSingle(),
@@ -52,11 +55,18 @@ const DashboardPage = async () => {
       .from("answers")
       .select("chapter_id, tier, field_key, value")
       .eq("user_id", userId),
+    supabase.from("quests").select("status").eq("user_id", userId),
     currentUser(),
   ]);
   if (profileError) throw new Error(`讀取角色資料失敗：${profileError.message}`);
   if (progressError) throw new Error(`讀取進度失敗：${progressError.message}`);
   if (answersError) throw new Error(`讀取答案失敗：${answersError.message}`);
+  // quests 表是 Phase 3 才新增的：只容許「表還不存在」這個特定錯誤，其他錯誤
+  // （權限、網路、其他原因）一律照既有規則往外拋，不要被這個特例悄悄吞掉。
+  const questsMigrationPending = isMissingQuestsTableError(questsError);
+  if (questsError && !questsMigrationPending) {
+    throw new Error(`讀取任務失敗：${questsError.message}`);
+  }
 
   const defaultName = profile?.hero_name || user?.fullName || user?.username || "";
   const progressMap = buildProgressMap(progressRows ?? []);
@@ -87,6 +97,7 @@ const DashboardPage = async () => {
   const journeyEvents = extractJourneyEvents(progressMap, chapterIds);
   const milestones = extractMilestones(answersMap, "ch8");
   const futureVision = extractFutureVision(answersMap, "ch8");
+  const questCounts = computeQuestCounts((quests ?? []) as Pick<Quest, "status">[]);
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 space-y-10 min-w-0">
@@ -127,6 +138,7 @@ const DashboardPage = async () => {
           <TalentPyramid title="天賦金字塔" data={talentPyramid} />
           <TalentPyramid title="技能金字塔" data={skillPyramid} />
           <AllianceRoster contacts={alliances} chapterHref="/chapters/ch6" />
+          <QuestSummaryCard counts={questCounts} migrationPending={questsMigrationPending} />
         </div>
       </div>
 
