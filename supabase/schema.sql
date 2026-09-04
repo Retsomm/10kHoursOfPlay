@@ -35,6 +35,28 @@ create table if not exists public.answers (
   primary key (user_id, chapter_id, tier, field_key)
 );
 
+-- Ch.8 三星成就制的實際任務追蹤（Phase 3）：使用者自訂 1～3 星門檻，
+-- 回報結果時 0 星會進入兩週冷卻期（cooldown_until），呼應書中「零星表現
+-- 先強制休息、重新評估，不要硬撐」的規則。
+create table if not exists public.quests (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  title text not null,
+  scope text not null check (scope in ('task', 'minor_quest')),
+  quest_type text,
+  star1_criteria text,
+  star2_criteria text,
+  star3_criteria text,
+  current_stars smallint not null default 0 check (current_stars between 0 and 3),
+  reward text,
+  status text not null default 'active' check (status in ('active', 'completed', 'cooldown', 'abandoned')),
+  cooldown_until timestamptz,
+  source_chapter_id text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.chapter_progress enable row level security;
 alter table public.answers enable row level security;
+alter table public.quests enable row level security;
