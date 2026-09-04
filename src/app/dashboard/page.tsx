@@ -17,7 +17,7 @@ import {
   extractPyramid,
   extractSkillWeb,
 } from "@/lib/heroStatus";
-import { computeQuestCounts, type Quest } from "@/lib/quests";
+import { computeQuestCounts, isMissingQuestsTableError, type Quest } from "@/lib/quests";
 import ChapterCard from "@/components/ChapterCard";
 import HeroNameEditor from "@/components/HeroNameEditor";
 import SignOutButton from "@/components/SignOutButton";
@@ -61,9 +61,12 @@ const DashboardPage = async () => {
   if (profileError) throw new Error(`讀取角色資料失敗：${profileError.message}`);
   if (progressError) throw new Error(`讀取進度失敗：${progressError.message}`);
   if (answersError) throw new Error(`讀取答案失敗：${answersError.message}`);
-  // quests 表是 Phase 3 才新增的：資料庫還沒跑最新 migration 時容許查詢失敗，
-  // 不要讓整個 Dashboard 因為這個還沒上線的功能而掛掉。
-  const questsMigrationPending = Boolean(questsError);
+  // quests 表是 Phase 3 才新增的：只容許「表還不存在」這個特定錯誤，其他錯誤
+  // （權限、網路、其他原因）一律照既有規則往外拋，不要被這個特例悄悄吞掉。
+  const questsMigrationPending = isMissingQuestsTableError(questsError);
+  if (questsError && !questsMigrationPending) {
+    throw new Error(`讀取任務失敗：${questsError.message}`);
+  }
 
   const defaultName = profile?.hero_name || user?.fullName || user?.username || "";
   const progressMap = buildProgressMap(progressRows ?? []);

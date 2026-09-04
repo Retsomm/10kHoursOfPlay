@@ -43,7 +43,7 @@ export const reportQuestOutcome = async (questId: string, stars: 0 | 1 | 2 | 3) 
 
   const supabase = createAdminClient();
   const isFailure = stars === 0;
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("quests")
     .update({
       current_stars: stars,
@@ -52,8 +52,11 @@ export const reportQuestOutcome = async (questId: string, stars: 0 | 1 | 2 | 3) 
       updated_at: new Date().toISOString(),
     })
     .eq("id", questId)
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .select("id");
   if (error) throw new Error(`更新任務結果失敗：${error.message}`);
+  if (!data || data.length === 0) throw new Error("這個任務目前不是進行中，無法回報結果");
 
   revalidatePath("/quests");
   revalidatePath("/dashboard");
@@ -64,12 +67,16 @@ export const restartQuest = async (questId: string) => {
   if (!userId) throw new Error("尚未登入");
 
   const supabase = createAdminClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("quests")
     .update({ status: "active", current_stars: 0, cooldown_until: null, updated_at: new Date().toISOString() })
     .eq("id", questId)
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .eq("status", "cooldown")
+    .lte("cooldown_until", new Date().toISOString())
+    .select("id");
   if (error) throw new Error(`重新開始任務失敗：${error.message}`);
+  if (!data || data.length === 0) throw new Error("這個任務還在冷卻中，或不是冷卻狀態，無法重新開始");
 
   revalidatePath("/quests");
   revalidatePath("/dashboard");

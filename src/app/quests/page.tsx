@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { appConfigured } from "@/lib/env";
 import { buildAnswersMap, getTierAnswers } from "@/lib/answers";
-import type { Quest } from "@/lib/quests";
+import { isMissingQuestsTableError, type Quest } from "@/lib/quests";
 import SetupNotice from "@/components/SetupNotice";
 import QuestForm from "@/components/quests/QuestForm";
 import QuestCard from "@/components/quests/QuestCard";
@@ -28,6 +28,10 @@ const QuestsPage = async () => {
       .eq("chapter_id", "ch8"),
   ]);
   if (answersError) throw new Error(`讀取第8章答案失敗：${answersError.message}`);
+
+  if (questsError && !isMissingQuestsTableError(questsError)) {
+    throw new Error(`讀取任務失敗：${questsError.message}`);
+  }
 
   if (questsError) {
     return (

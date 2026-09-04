@@ -1,6 +1,22 @@
 export type QuestScope = "task" | "minor_quest";
 export type QuestStatus = "active" | "completed" | "cooldown" | "abandoned";
 
+// Supabase/PostgREST reports a missing table via Postgres' 42P01 or PostgREST's
+// own PGRST205 ("...not found in the schema cache"), depending on version —
+// check both, plus the message text, so we only treat *this specific* failure
+// as "migration not run yet" and let every other error (permissions, network,
+// etc.) surface normally instead of being silently swallowed.
+export const isMissingQuestsTableError = (error: { code?: string; message?: string } | null): boolean => {
+  if (!error) return false;
+  const message = error.message ?? "";
+  return (
+    error.code === "42P01" ||
+    error.code === "PGRST205" ||
+    /schema cache/i.test(message) ||
+    /relation .* does not exist/i.test(message)
+  );
+};
+
 export const QUEST_SCOPE_LABEL: Record<QuestScope, string> = {
   task: "任務 Task",
   minor_quest: "次要任務 Minor Quest",
