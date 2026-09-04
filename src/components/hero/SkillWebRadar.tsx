@@ -8,9 +8,9 @@ const SkillWebRadar = ({ axes, chapterHref }: { axes: RadarAxis[]; chapterHref: 
     <div className="panel p-5 min-w-0">
       <RadarChart title="技能網" axes={axes} max={5} color="var(--color-gold)" />
       {!hasData && (
-        <p className="text-xs text-dim text-center mt-2">
+        <p className="text-sm text-dim text-center mt-2">
           <Link href={chapterHref} className="text-[var(--color-accent)] hover:underline">
-            前往第5.2章為職業技能打分 →
+前往「職業技能」評分 →
           </Link>
         </p>
       )}

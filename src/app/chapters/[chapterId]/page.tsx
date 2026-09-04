@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { appConfigured } from "@/lib/env";
-import { getChapter } from "@/data/chapters";
+import { CHAPTER_SHORT_LABEL, getChapter } from "@/data/chapters";
 import { TIERS } from "@/types/content";
 import { buildProgressMap, getChapterProgress, isTierUnlocked, isTierCompleted } from "@/lib/progress";
 import { buildAnswersMap, getTierAnswers } from "@/lib/answers";
@@ -54,7 +54,7 @@ const ChapterPage = async ({
         <Link href="/dashboard" className="text-sm text-dim hover:text-[var(--color-accent)]">
           ← 回到角色卡
         </Link>
-        <p className="font-display text-sm text-dim mt-4">{chapter.number}</p>
+        <p className="font-display text-sm text-dim mt-4">{CHAPTER_SHORT_LABEL[chapterId] ?? chapter.subtitle}</p>
         <h1 className="font-display text-2xl md:text-3xl font-bold mt-1">{chapter.title}</h1>
         <p className="text-dim mt-1">{chapter.subtitle}</p>
       </div>

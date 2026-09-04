@@ -21,12 +21,12 @@ const ChapterCard = ({
       className={`panel block p-5 transition hover:panel-glow ${fullyComplete ? "panel-glow" : ""}`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div>
-          <h3 className="text-lg font-bold">{chapter.title}</h3>
-          <p className="text-xs text-dim mt-0.5">{chapter.subtitle}</p>
+        <div className="min-w-0">
+          <h3 className="text-lg font-bold break-words">{chapter.title}</h3>
+          <p className="text-sm text-dim mt-0.5">{chapter.subtitle}</p>
         </div>
         {fullyComplete && (
-          <span className="text-xs px-2 py-1 rounded-full border border-[var(--color-gold)] star font-display">
+          <span className="shrink-0 whitespace-nowrap text-sm px-2 py-1 rounded-full border border-[var(--color-gold)] star font-display">
             已通關
           </span>
         )}
@@ -39,7 +39,7 @@ const ChapterCard = ({
           return (
             <div
               key={tier}
-              className={`flex-1 rounded-lg border px-3 py-2 text-center text-xs ${
+              className={`flex-1 rounded-lg border px-3 py-2 text-center text-sm ${
                 completed
                   ? "border-[var(--color-success)] text-[var(--color-success)]"
                   : unlocked

@@ -5,7 +5,7 @@ const TalentPyramid = ({ title, data }: { title: string; data: PyramidData }) =>
 
   return (
     <div className="panel p-5 min-w-0 space-y-4">
-      <p className="font-display text-xs text-dim tracking-widest">{title}</p>
+      <p className="font-display text-sm text-dim tracking-widest">{title}</p>
       {!hasData ? (
         <p className="text-sm text-dim text-center py-6">尚未填寫</p>
       ) : (
@@ -24,13 +24,13 @@ const TalentPyramid = ({ title, data }: { title: string; data: PyramidData }) =>
           <div className="w-full min-w-0 space-y-3 text-sm">
             {data.edge && (
               <div>
-                <p className="text-xs font-display star">王牌 EDGE</p>
+                <p className="text-sm font-display star">王牌 EDGE</p>
                 <p className="text-dim break-words">{data.edge}</p>
               </div>
             )}
             {data.ring.length > 0 && (
               <div>
-                <p className="text-xs font-display" style={{ color: "var(--color-accent)" }}>
+                <p className="text-sm font-display" style={{ color: "var(--color-accent)" }}>
                   戒指 RING
                 </p>
                 <p className="text-dim break-words">{data.ring.join("、")}</p>
@@ -38,7 +38,7 @@ const TalentPyramid = ({ title, data }: { title: string; data: PyramidData }) =>
             )}
             {data.base.length > 0 && (
               <div>
-                <p className="text-xs font-display" style={{ color: "var(--color-accent-2)" }}>
+                <p className="text-sm font-display" style={{ color: "var(--color-accent-2)" }}>
                   基座 BASE
                 </p>
                 <p className="text-dim break-words">{data.base.join("、")}</p>

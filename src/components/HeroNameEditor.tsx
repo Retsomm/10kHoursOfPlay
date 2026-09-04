@@ -18,7 +18,7 @@ const HeroNameEditor = ({ initialName }: { initialName: string }) => {
         <h1 className="font-display text-2xl md:text-3xl font-bold group-hover:text-[var(--color-accent)] transition">
           {name || "未命名英雄"}
         </h1>
-        <span className="text-xs text-dim">點擊編輯英雄名字</span>
+        <span className="text-sm text-dim">點擊編輯英雄名字</span>
       </button>
     );
   }

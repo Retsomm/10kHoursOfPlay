@@ -34,7 +34,7 @@ export const createQuest = async (input: {
   if (error) throw new Error(`新增任務失敗：${error.message}`);
 
   revalidatePath("/quests");
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
 };
 
 export const reportQuestOutcome = async (questId: string, stars: 0 | 1 | 2 | 3) => {
@@ -59,7 +59,7 @@ export const reportQuestOutcome = async (questId: string, stars: 0 | 1 | 2 | 3) 
   if (!data || data.length === 0) throw new Error("這個任務目前不是進行中，無法回報結果");
 
   revalidatePath("/quests");
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
 };
 
 export const restartQuest = async (questId: string) => {
@@ -79,7 +79,7 @@ export const restartQuest = async (questId: string) => {
   if (!data || data.length === 0) throw new Error("這個任務還在冷卻中，或不是冷卻狀態，無法重新開始");
 
   revalidatePath("/quests");
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
 };
 
 export const abandonQuest = async (questId: string) => {
@@ -95,5 +95,5 @@ export const abandonQuest = async (questId: string) => {
   if (error) throw new Error(`放棄任務失敗：${error.message}`);
 
   revalidatePath("/quests");
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/profile");
 };
