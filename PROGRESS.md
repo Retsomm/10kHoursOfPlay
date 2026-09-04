@@ -11,18 +11,55 @@
 2. Google 登入（Clerk）+ 資料庫（Supabase）在正式環境（Vercel）跑起來，非本機 demo
 3. 使用者本人實際用過一輪，確認填答體驗、視覺設計沒有阻礙使用意願
 
-**目前卡在哪裡（2026-09-03）：**
-- 內容與功能骨架都做完了（12 章節、循序解鎖、存檔），本機驗證通過
-- 還沒部署到 Vercel——目前只在 `dev` 分支跑本機 dev server 測試
+**目前卡在哪裡（2026-09-04）：**
+- 已部署到 Vercel 正式環境：https://10k-hours-of-play.vercel.app/
+- Clerk Google 登入在正式站已確認正常（先前踩過「本機與 Vercel 接到兩個不同 Clerk 專案」的坑，
+  已修復並驗證，見 `~/my-agent/000_Agent/knowledge/learn/10kHoursOfPlay/`）
+- `main`／`dev` 目前完全同步（PR #3 已合併，使用者手動確認過）
+- 在原本 12 章節的填答功能之上，新增了「英雄狀態」視覺化 Dashboard（天賦/技能金字塔、
+  六步驟對齊雷達圖、技能網雷達圖、聯盟名冊、人生旅程時間軸）與 Phase 3 任務追蹤器
+  （`/quests`，書中三星成就制，0 星觸發兩週冷卻），細節見下方 2026-09-04 條目
 - 這個 session 全程沒有瀏覽器可用（Claude in Chrome 擴充功能未連線），所有視覺／UX 判斷都是
   使用者自己測、回報問題後我再修，不是我自己看過確認的
+- Ch3-1／Ch5-1／Ch5-2／Ch6／Ch8／Ch9 目前存的是**測試用假資料**（為了驗證新圖表元件而塞的
+  「測試英雄」那組），還沒被使用者的真實內容覆蓋
 
 **下一步（依序）：**
-1. 使用者完整跑過一次全部 12 章節（不只抽測），確認沒有遺漏的 bug
-2. 部署到 Vercel，設定正式環境的 Clerk／Supabase 環境變數
-3. 決定要不要開 PR 把 `dev` 合併回 `main`
-4. 之後才是「好不好用」層面的迭代（視覺調整、UX 優化），不是內容範圍的擴充——手冊內容本身
-   已經沒有更多可以加了
+1. 使用者完整跑一輪使用者體驗測試（原本說等主功能做完再一次測，現在 Phase 1～3 都上線了）
+2. 把 Ch3-1／Ch5-1／Ch5-2／Ch6／Ch8／Ch9 的測試假資料換成使用者自己的真實內容
+3. 視使用狀況決定要不要做 Phase 3 的選配延伸（刻意練習時數記錄、課責提醒 UI）
+4. 正式站目前用 Clerk Development instance（`pk_test_`，有使用量限制），若之後要開放
+   給自己以外的人用，需要另外申請 Production instance（`pk_live_`）
+
+## 2026-09-04 — 英雄狀態儀表板（Phase 1+2）、任務追蹤器（Phase 3）、Vercel 正式站 Clerk 登入修復
+
+**Phase 1+2：英雄狀態視覺化 + 欄位引擎擴充**
+- 新增三種欄位型別：`rating`（單一評分）、`classRating`（多職業評分）、`contactList`
+  （聯絡人卡片），對應書中 Ch5-2 職業評分、Ch9 六步驟自評、Ch6 聯盟名冊三題
+- Dashboard 新增「英雄狀態」區塊：等級徽章（NPC/10K HP Player/OP Player/OP Hero）、
+  天賦金字塔、技能金字塔、六步驟對齊雷達圖、技能網雷達圖（7 個 Gameful Skill Class）、
+  聯盟名冊、人生旅程時間軸（含連接線，隨寬度在水平/垂直排列間切換）
+- 圖表全部手刻 inline SVG，沒有新增 npm 依賴
+
+**Phase 3：任務追蹤器**
+- 新增 `quests` 資料表與 `/quests` 頁面，實作書中三星成就制：使用者自訂 1～3 星門檻，
+  回報結果後 0 星觸發兩週冷卻期（呼應書中「先強制休息、重新評估」的規則）
+- 可從 Ch8 次要任務一鍵帶入標題／獎勵，Dashboard 新增任務數量摘要卡片
+
+**RWD／程式碼健檢**
+- 修掉一個 flex 版面的坑：`body`（或任何祖先容器）是 `display:flex` 時，子元素預設
+  `min-width:auto` 會沿著整條 flex 鏈往上傳遞，讓 `auto-fit`／`minmax` 版面的欄數計算
+  失真——拿掉 `body` 不必要的 `flex flex-col`，並在整條 flex 鏈補齊 `min-w-0`
+- 兩輪 code review 修正：鍵盤 Space 誤觸捲頁、聯盟名冊無聲丟棄不合法資料、任務追蹤器
+  的錯誤處理只該吞「表不存在」這個特定錯誤、`reportQuestOutcome`/`restartQuest` 補上
+  伺服器端狀態防護（避免競態把任務推進不合法的狀態）
+
+**正式站 Clerk Google 登入修復**（詳細排查過程見
+`~/my-agent/000_Agent/knowledge/learn/10kHoursOfPlay/feedback-clerk-google-oauth-shared-credentials-localstorage-cache.md`）
+- 根因：Vercel 環境變數的 Clerk 金鑰跟本機 `.env.local` 接到兩個不同的 Clerk 專案，
+  换成同一組金鑰後，使用者已在正式站驗證 Google 登入正常顯示
+
+**其他**：`main`／`dev` 已由使用者手動合併同步（PR #3）。
 
 ## 2026-09-03 — Phase II 內容上線（第5～9章），Dashboard/首頁改分區顯示
 
