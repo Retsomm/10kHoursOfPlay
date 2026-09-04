@@ -489,9 +489,18 @@ export const CHAPTERS: ChapterContent[] = [
         fields: [
           { type: "textarea", key: "owned_skills", label: "列出你已經擁有的現實人生遊戲技能。" },
           {
-            type: "textarea",
+            type: "classRating",
             key: "class",
-            label: "根據你最強的技能，你屬於哪種「職業」（戰士、法師、盜賊等）？",
+            label: "根據你最強的技能，為每種「職業」評分（1～5星），找出屬於你的主要與次要職業。",
+            classes: [
+              { key: "warrior", label: "戰士（對抗與說服）" },
+              { key: "ranger", label: "遊俠（觀察與創新）" },
+              { key: "mage", label: "法師（分析與計算）" },
+              { key: "rogue", label: "盜賊（實驗與優化）" },
+              { key: "druid", label: "德魯伊（關懷與同理）" },
+              { key: "paladin", label: "聖騎士（激勵與吸引）" },
+              { key: "warlock", label: "術士（競爭與擊敗）" },
+            ],
           },
           {
             type: "list",
@@ -534,8 +543,18 @@ export const CHAPTERS: ChapterContent[] = [
         intro:
           "找出你目前在人生遊戲中，已經加入的陣營、公會、隊伍與夥伴，寫下每個聯盟目前為止對你的遊戲做出了什麼貢獻。",
         fields: [
-          { type: "textarea", key: "current_alliances", label: "你目前是哪些陣營、公會、隊伍或夥伴關係的一員？" },
-          { type: "textarea", key: "contribution", label: "每個聯盟目前為止對你的人生遊戲做出了什麼貢獻？" },
+          {
+            type: "contactList",
+            key: "current_alliances",
+            label: "你目前是哪些陣營、公會、隊伍或夥伴關係的一員？各自對你的人生遊戲做出了什麼貢獻？",
+            itemCount: 5,
+            relationshipOptions: [
+              { key: "faction", label: "陣營（Faction）" },
+              { key: "guild", label: "公會（Guild）" },
+              { key: "party", label: "隊伍（Party）" },
+              { key: "partnership", label: "夥伴關係（Partnership）" },
+            ],
+          },
         ],
       },
       medium: {
@@ -717,13 +736,19 @@ export const CHAPTERS: ChapterContent[] = [
     phase: "II",
     tiers: {
       easy: {
-        intro: "回顧你目前在「10K HP」旅程六個步驟中的進度：",
+        intro: "回顧你目前在「10K HP」旅程六個步驟中的進度，先為每個步驟打分（1～5星），再寫下具體反思：",
         fields: [
+          { type: "rating", key: "right_game_rating", label: "你正在玩對的遊戲嗎？（自評分數）" },
           { type: "textarea", key: "right_game", label: "你正在玩對的遊戲嗎？" },
+          { type: "rating", key: "attributes_rating", label: "你有效理解並運用你的屬性嗎？（自評分數）" },
           { type: "textarea", key: "attributes", label: "你有效理解並運用你的屬性嗎？" },
+          { type: "rating", key: "role_rating", label: "你確定了自己的角色了嗎？（自評分數）" },
           { type: "textarea", key: "role", label: "你確定了自己的角色了嗎？" },
+          { type: "rating", key: "skills_rating", label: "你正在建立並磨練你需要的技能嗎？（自評分數）" },
           { type: "textarea", key: "skills", label: "你正在建立並磨練你需要的技能嗎？" },
+          { type: "rating", key: "allies_rating", label: "你身邊圍繞著對的盟友嗎？（自評分數）" },
           { type: "textarea", key: "allies", label: "你身邊圍繞著對的盟友嗎？" },
+          { type: "rating", key: "quests_rating", label: "你正在追求有意義且符合SMART原則的任務嗎？（自評分數）" },
           { type: "textarea", key: "quests", label: "你正在追求有意義且符合SMART原則的任務嗎？" },
         ],
       },

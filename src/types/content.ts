@@ -14,7 +14,7 @@ export const TIER_STARS: Record<Tier, number> = {
   hard: 3,
 };
 
-export type FieldType = "textarea" | "list" | "table";
+export type FieldType = "textarea" | "list" | "table" | "rating" | "classRating" | "contactList";
 
 export interface TextareaField {
   type: "textarea";
@@ -39,7 +39,35 @@ export interface TableField {
   rowLabels?: string[];
 }
 
-export type Field = TextareaField | ListField | TableField;
+export interface RatingField {
+  type: "rating";
+  key: string;
+  label: string;
+  max?: number;
+}
+
+export interface ClassRatingField {
+  type: "classRating";
+  key: string;
+  label: string;
+  classes: { key: string; label: string }[];
+}
+
+export interface ContactListField {
+  type: "contactList";
+  key: string;
+  label: string;
+  itemCount: number;
+  relationshipOptions: { key: string; label: string }[];
+}
+
+export type Field =
+  | TextareaField
+  | ListField
+  | TableField
+  | RatingField
+  | ClassRatingField
+  | ContactListField;
 
 export interface TierContent {
   intro?: string;

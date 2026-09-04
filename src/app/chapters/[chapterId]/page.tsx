@@ -49,7 +49,7 @@ const ChapterPage = async ({
   const answersMap = buildAnswersMap(answerRows ?? []);
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10 space-y-8">
+    <div className="max-w-3xl mx-auto px-6 py-10 space-y-8 min-w-0">
       <div>
         <Link href="/dashboard" className="text-sm text-dim hover:text-[var(--color-accent)]">
           ← 回到角色卡
