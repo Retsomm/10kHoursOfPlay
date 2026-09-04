@@ -72,7 +72,8 @@ body {
 }
 
 input,
-textarea {
+textarea,
+select {
   background: rgba(6, 11, 24, 0.6);
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
@@ -83,7 +84,8 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   outline: none;
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
@@ -92,4 +94,9 @@ textarea:focus {
 input::placeholder,
 textarea::placeholder {
   color: var(--color-text-dim);
+}
+
+select option {
+  background: var(--color-bg-panel);
+  color: var(--color-text);
 }

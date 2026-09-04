@@ -6,7 +6,7 @@ const LoginPage = () => {
   if (!clerkConfigured()) return <SetupNotice />;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 px-6">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 px-6 min-w-0">
       <div className="text-center">
         <p className="font-display text-xs star tracking-widest">10,000</p>
         <h1 className="font-display text-xl font-bold mt-1">HOURS OF PLAY</h1>

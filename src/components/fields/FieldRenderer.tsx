@@ -1,9 +1,12 @@
 "use client";
 
 import type { Field } from "@/types/content";
+import StarRating from "../StarRating";
 
 type ListValue = string[];
 type TableValue = Record<string, string>[];
+type ClassRatingValue = Record<string, number>;
+type ContactListValue = { name: string; relationship: string; trust?: string; note?: string }[];
 
 const FieldRenderer = ({
   field,
@@ -53,6 +56,93 @@ const FieldRenderer = ({
               />
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (field.type === "rating") {
+    const max = field.max ?? 5;
+    const v = typeof value === "number" ? value : 0;
+    return (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">{field.label}</label>
+        <StarRating filled={v} total={max} onRate={(n) => onChange(n)} />
+      </div>
+    );
+  }
+
+  if (field.type === "classRating") {
+    const v: ClassRatingValue = typeof value === "object" && value !== null ? (value as ClassRatingValue) : {};
+    return (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">{field.label}</label>
+        <div className="space-y-2">
+          {field.classes.map((cls) => (
+            <div key={cls.key} className="flex items-center justify-between gap-2">
+              <span className="text-sm text-dim">{cls.label}</span>
+              <StarRating
+                filled={v[cls.key] ?? 0}
+                total={5}
+                onRate={(n) => onChange({ ...v, [cls.key]: n })}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (field.type === "contactList") {
+    const v: ContactListValue = Array.isArray(value)
+      ? (value as ContactListValue)
+      : Array.from({ length: field.itemCount }, () => ({ name: "", relationship: "" }));
+    return (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">{field.label}</label>
+        <div className="space-y-2">
+          {Array.from({ length: field.itemCount }).map((_, i) => {
+            const row = v[i] ?? { name: "", relationship: "" };
+            const setRow = (next: Partial<ContactListValue[number]>) => {
+              const nextList = [...v];
+              nextList[i] = { ...row, ...next };
+              onChange(nextList);
+            };
+            const needsRelationship = row.name.trim().length > 0 && !row.relationship;
+            return (
+              <div key={i} className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-2">
+                  <input
+                    placeholder="姓名"
+                    value={row.name}
+                    onChange={(e) => setRow({ name: e.target.value })}
+                  />
+                  <select
+                    value={row.relationship}
+                    onChange={(e) => setRow({ relationship: e.target.value })}
+                    style={needsRelationship ? { borderColor: "var(--color-danger)" } : undefined}
+                  >
+                    <option value="">類型</option>
+                    {field.relationshipOptions.map((opt) => (
+                      <option key={opt.key} value={opt.key}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    placeholder="備註（貢獻/連結方式）"
+                    value={row.note ?? ""}
+                    onChange={(e) => setRow({ note: e.target.value })}
+                  />
+                </div>
+                {needsRelationship && (
+                  <p className="text-xs" style={{ color: "var(--color-danger)" }}>
+                    請選擇類型，否則這筆不會顯示在英雄狀態的聯盟名冊裡
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     );

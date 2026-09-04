@@ -6,10 +6,27 @@ import { appConfigured } from "@/lib/env";
 import { CHAPTERS } from "@/data/chapters";
 import { PHASE_LABEL, type Phase } from "@/types/content";
 import { buildProgressMap, getChapterProgress, totalCompletedTiers } from "@/lib/progress";
+import { buildAnswersMap } from "@/lib/answers";
+import {
+  computeHeroLevel,
+  extractAlignmentRadar,
+  extractAlliances,
+  extractFutureVision,
+  extractJourneyEvents,
+  extractMilestones,
+  extractPyramid,
+  extractSkillWeb,
+} from "@/lib/heroStatus";
 import ChapterCard from "@/components/ChapterCard";
 import HeroNameEditor from "@/components/HeroNameEditor";
 import SignOutButton from "@/components/SignOutButton";
 import SetupNotice from "@/components/SetupNotice";
+import HeroLevelBadge from "@/components/hero/HeroLevelBadge";
+import TalentPyramid from "@/components/hero/TalentPyramid";
+import AlignmentRadar from "@/components/hero/AlignmentRadar";
+import SkillWebRadar from "@/components/hero/SkillWebRadar";
+import AllianceRoster from "@/components/hero/AllianceRoster";
+import JourneyTimeline from "@/components/hero/JourneyTimeline";
 
 const PHASES: Phase[] = ["I", "II"];
 
@@ -23,6 +40,7 @@ const DashboardPage = async () => {
   const [
     { data: profile, error: profileError },
     { data: progressRows, error: progressError },
+    { data: answerRows, error: answersError },
     user,
   ] = await Promise.all([
     supabase.from("profiles").select("hero_name").eq("user_id", userId).maybeSingle(),
@@ -30,19 +48,48 @@ const DashboardPage = async () => {
       .from("chapter_progress")
       .select("chapter_id, tier, completed_at")
       .eq("user_id", userId),
+    supabase
+      .from("answers")
+      .select("chapter_id, tier, field_key, value")
+      .eq("user_id", userId),
     currentUser(),
   ]);
   if (profileError) throw new Error(`讀取角色資料失敗：${profileError.message}`);
   if (progressError) throw new Error(`讀取進度失敗：${progressError.message}`);
+  if (answersError) throw new Error(`讀取答案失敗：${answersError.message}`);
 
   const defaultName = profile?.hero_name || user?.fullName || user?.username || "";
   const progressMap = buildProgressMap(progressRows ?? []);
+  const answersMap = buildAnswersMap(answerRows ?? []);
   const chapterIds = CHAPTERS.map((c) => c.id);
+  const chapterTitles = Object.fromEntries(CHAPTERS.map((c) => [c.id, c.title]));
+  const phase1Ids = CHAPTERS.filter((c) => c.phase === "I").map((c) => c.id);
   const totalTiers = chapterIds.length * 3;
   const done = totalCompletedTiers(progressMap, chapterIds);
 
+  const heroLevel = computeHeroLevel(progressMap, phase1Ids, chapterIds, "ch9");
+  const talentPyramid = extractPyramid(answersMap, {
+    chapterId: "ch3-1",
+    tier: "hard",
+    edgeKey: "edge",
+    ringKey: "ring",
+    baseKey: "base",
+  });
+  const skillPyramid = extractPyramid(answersMap, {
+    chapterId: "ch5-1",
+    tier: "easy",
+    ringKey: "ring_skills",
+    baseKey: "base_skills",
+  });
+  const alignmentAxes = extractAlignmentRadar(answersMap, "ch9");
+  const skillWebAxes = extractSkillWeb(answersMap, "ch5-2");
+  const alliances = extractAlliances(answersMap, "ch6");
+  const journeyEvents = extractJourneyEvents(progressMap, chapterIds);
+  const milestones = extractMilestones(answersMap, "ch8");
+  const futureVision = extractFutureVision(answersMap, "ch8");
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10 space-y-10">
+    <div className="max-w-5xl mx-auto px-6 py-10 space-y-10 min-w-0">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-display text-xs text-dim">10,000 HOURS OF PLAY</p>
@@ -71,10 +118,29 @@ const DashboardPage = async () => {
         </div>
       </div>
 
+      <div className="space-y-4">
+        <p className="font-display text-xs text-dim tracking-widest">英雄狀態</p>
+        <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))]">
+          <HeroLevelBadge info={heroLevel} />
+          <AlignmentRadar axes={alignmentAxes} chapterHref="/chapters/ch9" />
+          <SkillWebRadar axes={skillWebAxes} chapterHref="/chapters/ch5-2" />
+          <TalentPyramid title="天賦金字塔" data={talentPyramid} />
+          <TalentPyramid title="技能金字塔" data={skillPyramid} />
+          <AllianceRoster contacts={alliances} chapterHref="/chapters/ch6" />
+        </div>
+      </div>
+
+      <JourneyTimeline
+        events={journeyEvents}
+        chapterTitles={chapterTitles}
+        milestones={milestones}
+        futureVision={futureVision}
+      />
+
       {PHASES.map((phase) => (
         <div key={phase} className="space-y-4">
           <p className="font-display text-xs text-dim tracking-widest">{PHASE_LABEL[phase]}</p>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))]">
             {CHAPTERS.filter((c) => c.phase === phase).map((chapter) => (
               <ChapterCard
                 key={chapter.id}

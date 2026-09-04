@@ -6,8 +6,8 @@ const PHASES: Phase[] = ["I", "II"];
 
 const Home = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="max-w-5xl mx-auto w-full px-6 pt-24 pb-16 text-center">
+    <div className="min-h-screen flex flex-col min-w-0">
+      <header className="max-w-5xl mx-auto w-full px-6 pt-24 pb-16 text-center min-w-0">
         <p className="font-display text-sm star tracking-[0.3em]">10,000</p>
         <h1 className="font-display text-4xl md:text-5xl font-black mt-2">
           HOURS OF PLAY
@@ -25,11 +25,11 @@ const Home = () => {
       </header>
 
       {PHASES.map((phase) => (
-        <section key={phase} className="max-w-5xl mx-auto w-full px-6 pb-16">
+        <section key={phase} className="max-w-5xl mx-auto w-full px-6 pb-16 min-w-0">
           <p className="font-display text-xs text-dim text-center mb-6 tracking-widest">
             {PHASE_LABEL[phase]}
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))]">
             {CHAPTERS.filter((c) => c.phase === phase).map((chapter) => (
               <div key={chapter.id} className="panel p-5">
                 <h3 className="font-bold">{chapter.title}</h3>
