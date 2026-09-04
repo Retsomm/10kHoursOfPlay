@@ -19,6 +19,7 @@ const StarRating = ({
           onKeyDown={
             onRate
               ? (e) => {
+                  if (e.key === " ") e.preventDefault();
                   if (e.key === "Enter" || e.key === " ") onRate(i + 1);
                 }
               : undefined

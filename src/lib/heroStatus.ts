@@ -118,11 +118,19 @@ export interface AllianceContact {
   note?: string;
 }
 
+const VALID_RELATIONSHIPS = new Set(["faction", "guild", "party", "partnership"]);
+
 export const extractAlliances = (answersMap: AnswersMap, ch6Id: string): AllianceContact[] => {
   const tierAnswers = getTierAnswers(answersMap, ch6Id, "easy");
   const raw = tierAnswers["current_alliances"];
   if (!Array.isArray(raw)) return [];
-  return (raw as AllianceContact[]).filter((c) => c && typeof c.name === "string" && c.name.trim().length > 0);
+  return (raw as AllianceContact[]).filter(
+    (c) =>
+      c &&
+      typeof c.name === "string" &&
+      c.name.trim().length > 0 &&
+      VALID_RELATIONSHIPS.has(c.relationship),
+  );
 };
 
 export interface JourneyEvent {

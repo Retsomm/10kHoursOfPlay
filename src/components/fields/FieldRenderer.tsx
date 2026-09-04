@@ -108,29 +108,38 @@ const FieldRenderer = ({
               nextList[i] = { ...row, ...next };
               onChange(nextList);
             };
+            const needsRelationship = row.name.trim().length > 0 && !row.relationship;
             return (
-              <div key={i} className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-2">
-                <input
-                  placeholder="姓名"
-                  value={row.name}
-                  onChange={(e) => setRow({ name: e.target.value })}
-                />
-                <select
-                  value={row.relationship}
-                  onChange={(e) => setRow({ relationship: e.target.value })}
-                >
-                  <option value="">類型</option>
-                  {field.relationshipOptions.map((opt) => (
-                    <option key={opt.key} value={opt.key}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  placeholder="備註（貢獻/連結方式）"
-                  value={row.note ?? ""}
-                  onChange={(e) => setRow({ note: e.target.value })}
-                />
+              <div key={i} className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-2">
+                  <input
+                    placeholder="姓名"
+                    value={row.name}
+                    onChange={(e) => setRow({ name: e.target.value })}
+                  />
+                  <select
+                    value={row.relationship}
+                    onChange={(e) => setRow({ relationship: e.target.value })}
+                    style={needsRelationship ? { borderColor: "var(--color-danger)" } : undefined}
+                  >
+                    <option value="">類型</option>
+                    {field.relationshipOptions.map((opt) => (
+                      <option key={opt.key} value={opt.key}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    placeholder="備註（貢獻/連結方式）"
+                    value={row.note ?? ""}
+                    onChange={(e) => setRow({ note: e.target.value })}
+                  />
+                </div>
+                {needsRelationship && (
+                  <p className="text-xs" style={{ color: "var(--color-danger)" }}>
+                    請選擇類型，否則這筆不會顯示在英雄狀態的聯盟名冊裡
+                  </p>
+                )}
               </div>
             );
           })}
