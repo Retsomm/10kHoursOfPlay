@@ -203,6 +203,7 @@ const Home = () => {
 
   const zoneRefs = useRef<(HTMLElement | null)[]>([]);
   const transitionFillRef = useRef<HTMLDivElement>(null);
+  const transitionFrameRef = useRef(0);
   const heroArtRef = useRef<HTMLDivElement>(null);
   const bgGridRef = useRef<HTMLDivElement>(null);
   const bgGlowRef = useRef<HTMLDivElement>(null);
@@ -242,14 +243,20 @@ const Home = () => {
       const eased = 1 - Math.pow(1 - t, 3);
       if (transitionFillRef.current) transitionFillRef.current.style.width = `${(eased * 100).toFixed(1)}%`;
       if (t < 1) {
-        requestAnimationFrame(step);
+        transitionFrameRef.current = requestAnimationFrame(step);
       } else {
         router.push("/login");
       }
     };
 
-    requestAnimationFrame(step);
+    transitionFrameRef.current = requestAnimationFrame(step);
   };
+
+  useEffect(() => {
+    return () => {
+      if (transitionFrameRef.current) cancelAnimationFrame(transitionFrameRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     let frame = 0;
