@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { QUEST_TYPE_OPTIONS, type QuestScope } from "@/lib/quests";
 
 export interface QuestFieldsValue {
@@ -34,6 +35,9 @@ const QuestFields = ({
   onChange: (patch: Partial<QuestFieldsValue>) => void;
   showSmartIntro?: boolean;
 }) => {
+  // 新增表單跟每張任務卡片的編輯模式可能同時掛在同一頁上，id 一定要用 useId
+  // 產生每個實例專屬的前綴，不能寫死固定字串，不然會有重複 id、label 對不到對的欄位。
+  const uid = useId();
   return (
     <>
       {showSmartIntro && (
@@ -46,8 +50,11 @@ const QuestFields = ({
       )}
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium">任務名稱（S 具體）</label>
+        <label htmlFor={`${uid}-title`} className="block text-sm font-medium">
+          任務名稱（S 具體）
+        </label>
         <input
+          id={`${uid}-title`}
           value={value.title}
           onChange={(e) => onChange({ title: e.target.value })}
           placeholder="例如：完成一份完整的產品提案"
@@ -56,15 +63,23 @@ const QuestFields = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
-          <label className="block text-sm font-medium">範疇</label>
-          <select value={value.scope} onChange={(e) => onChange({ scope: e.target.value as QuestScope })}>
+          <label htmlFor={`${uid}-scope`} className="block text-sm font-medium">
+            範疇
+          </label>
+          <select
+            id={`${uid}-scope`}
+            value={value.scope}
+            onChange={(e) => onChange({ scope: e.target.value as QuestScope })}
+          >
             <option value="task">任務 Task</option>
             <option value="minor_quest">次要任務 Minor Quest</option>
           </select>
         </div>
         <div className="space-y-2">
-          <label className="block text-sm font-medium">類型（選填）</label>
-          <select value={value.questType} onChange={(e) => onChange({ questType: e.target.value })}>
+          <label htmlFor={`${uid}-type`} className="block text-sm font-medium">
+            類型（選填）
+          </label>
+          <select id={`${uid}-type`} value={value.questType} onChange={(e) => onChange({ questType: e.target.value })}>
             <option value="">不指定</option>
             {QUEST_TYPE_OPTIONS.map((opt) => (
               <option key={opt.key} value={opt.key}>
@@ -76,24 +91,57 @@ const QuestFields = ({
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium">1 星門檻（M 可衡量／A 可達成，選填）</label>
-        <textarea rows={2} value={value.star1} onChange={(e) => onChange({ star1: e.target.value })} placeholder="做到什麼程度算 1 星？" />
+        <label htmlFor={`${uid}-star1`} className="block text-sm font-medium">
+          1 星門檻（M 可衡量／A 可達成，選填）
+        </label>
+        <textarea
+          id={`${uid}-star1`}
+          rows={2}
+          value={value.star1}
+          onChange={(e) => onChange({ star1: e.target.value })}
+          placeholder="做到什麼程度算 1 星？"
+        />
       </div>
       <div className="space-y-2">
-        <label className="block text-sm font-medium">2 星門檻（M 可衡量／A 可達成，選填）</label>
-        <textarea rows={2} value={value.star2} onChange={(e) => onChange({ star2: e.target.value })} placeholder="做到什麼程度算 2 星？" />
+        <label htmlFor={`${uid}-star2`} className="block text-sm font-medium">
+          2 星門檻（M 可衡量／A 可達成，選填）
+        </label>
+        <textarea
+          id={`${uid}-star2`}
+          rows={2}
+          value={value.star2}
+          onChange={(e) => onChange({ star2: e.target.value })}
+          placeholder="做到什麼程度算 2 星？"
+        />
       </div>
       <div className="space-y-2">
-        <label className="block text-sm font-medium">3 星門檻（M 可衡量／A 可達成，選填）</label>
-        <textarea rows={2} value={value.star3} onChange={(e) => onChange({ star3: e.target.value })} placeholder="做到什麼程度算 3 星？" />
+        <label htmlFor={`${uid}-star3`} className="block text-sm font-medium">
+          3 星門檻（M 可衡量／A 可達成，選填）
+        </label>
+        <textarea
+          id={`${uid}-star3`}
+          rows={2}
+          value={value.star3}
+          onChange={(e) => onChange({ star3: e.target.value })}
+          placeholder="做到什麼程度算 3 星？"
+        />
       </div>
       <div className="space-y-2">
-        <label className="block text-sm font-medium">時限（T 有時限，選填）</label>
-        <input type="date" value={value.dueDate} onChange={(e) => onChange({ dueDate: e.target.value })} />
+        <label htmlFor={`${uid}-due-date`} className="block text-sm font-medium">
+          時限（T 有時限，選填）
+        </label>
+        <input id={`${uid}-due-date`} type="date" value={value.dueDate} onChange={(e) => onChange({ dueDate: e.target.value })} />
       </div>
       <div className="space-y-2">
-        <label className="block text-sm font-medium">獎勵（選填）</label>
-        <input value={value.reward} onChange={(e) => onChange({ reward: e.target.value })} placeholder="達成後要給自己什麼獎勵？" />
+        <label htmlFor={`${uid}-reward`} className="block text-sm font-medium">
+          獎勵（選填）
+        </label>
+        <input
+          id={`${uid}-reward`}
+          value={value.reward}
+          onChange={(e) => onChange({ reward: e.target.value })}
+          placeholder="達成後要給自己什麼獎勵？"
+        />
       </div>
     </>
   );

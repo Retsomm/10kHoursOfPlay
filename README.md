@@ -69,7 +69,7 @@ yarn dev
 **內容資料**
 - `src/data/chapters.ts` — 12 個章節、每章 3 個層級（簡單/中等/困難）的題目內容，改題目就改這裡。
 - `src/types/content.ts` — 題型定義（textarea / list / table / rating / classRating / contactList）與 Tier／Phase 常數。
-- `src/lib/progress.ts` — 章節解鎖邏輯（完成簡單才解鎖中等，以此類推）。
+- `src/lib/progress.ts` — 章節完成判定（三個難度一開始就都能填，完成任一個即算這個章節通關）。
 
 **英雄狀態與六步驟**
 - `src/lib/heroStatus.ts` — 依填答資料算出等級、雷達圖軸線、天賦/技能金字塔、聯盟名冊、旅程時間軸等衍生資料。

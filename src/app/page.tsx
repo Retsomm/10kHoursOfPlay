@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { CHAPTERS } from "@/data/chapters";
 import { SIX_STEPS } from "@/lib/sixSteps";
 import { TIERS, TIER_LABEL } from "@/types/content";
-import LockIcon from "@/components/LockIcon";
 
 const ACCENT = "#38bdf8";
 const GOLD = "#fbbf24";
@@ -75,23 +74,24 @@ const STEP_DETAILS: Record<number, { en: string; done: number; total: number; de
 
 const HOME_STEPS = SIX_STEPS.map((s) => ({ ...s, ...STEP_DETAILS[s.step] }));
 
-// 0=鎖定 1=可挑戰 2=已通關，跟 CHAPTERS 同順序——同樣是示範資料，不是真實進度
+// 0=可挑戰 1=已通關，跟 CHAPTERS 同順序——同樣是示範資料，不是真實進度。
+// 三個難度一開始就都能填、沒有鎖定狀態，示範資料不能再畫出「鎖定」這個不存在的狀態。
 const DEMO_TIER_STATES: [number, number, number][] = [
-  [2, 2, 2],
+  [1, 1, 1],
+  [0, 0, 0],
+  [1, 1, 1],
+  [0, 0, 0],
+  [0, 0, 0],
+  [0, 0, 0],
   [1, 0, 0],
-  [2, 2, 2],
   [1, 0, 0],
   [1, 0, 0],
+  [0, 0, 0],
+  [1, 1, 1],
   [1, 0, 0],
-  [2, 1, 0],
-  [2, 1, 0],
-  [2, 1, 0],
-  [1, 0, 0],
-  [2, 2, 2],
-  [2, 1, 0],
 ];
 
-const TIER_STATE_LABEL = ["鎖定", "可挑戰", "已通關"];
+const TIER_STATE_LABEL = ["可挑戰", "已通關"];
 
 const RANKS = [
   { name: "NPC", desc: "照著別人的劇本過日子" },
@@ -661,7 +661,7 @@ const Home = () => {
           <div className="flex-1 min-w-0 basis-[520px] grid gap-3 grid-cols-[repeat(auto-fill,minmax(150px,1fr))]">
             {CHAPTERS.map((chapter, i) => {
               const on = activeChapterIdx === i;
-              const cleared = DEMO_TIER_STATES[i].every((x) => x === 2);
+              const cleared = DEMO_TIER_STATES[i].some((x) => x === 1);
               return (
                 <Reveal key={chapter.id} delay={(i % 6) * 50} className="h-full">
                   <button
@@ -684,8 +684,8 @@ const Home = () => {
                             key={j}
                             className="w-1.5 h-1.5 rounded-sm border"
                             style={{
-                              background: state === 2 ? SUCCESS : state === 1 ? ACCENT : "transparent",
-                              borderColor: state === 2 ? SUCCESS : state === 1 ? ACCENT : BRIGHT,
+                              background: state === 1 ? SUCCESS : ACCENT,
+                              borderColor: state === 1 ? SUCCESS : ACCENT,
                             }}
                           />
                         ))}
@@ -713,19 +713,16 @@ const Home = () => {
               <div className="flex flex-col gap-2">
                 {TIERS.map((tier, i) => {
                   const state = activeChapterTiers[i];
-                  const color = state === 2 ? SUCCESS : state === 1 ? "#c6d8ef" : DIM;
-                  const border = state === 2 ? SUCCESS : state === 1 ? BRIGHT : "#1f3a63";
-                  const fill = state === 2 ? "rgba(52,211,153,.10)" : state === 1 ? "rgba(56,189,248,.06)" : "transparent";
+                  const color = state === 1 ? SUCCESS : "#c6d8ef";
+                  const border = state === 1 ? SUCCESS : BRIGHT;
+                  const fill = state === 1 ? "rgba(52,211,153,.10)" : "rgba(56,189,248,.06)";
                   return (
                     <div
                       key={tier}
                       className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border text-sm"
                       style={{ borderColor: border, background: fill, color }}
                     >
-                      <span className="flex items-center gap-1.5">
-                        {state === 0 && <LockIcon className="w-3 h-3" />}
-                        {TIER_LABEL[tier]}
-                      </span>
+                      <span className="flex items-center gap-1.5">{TIER_LABEL[tier]}</span>
                       <span className="font-tech text-xs">{TIER_STATE_LABEL[state]}</span>
                     </div>
                   );

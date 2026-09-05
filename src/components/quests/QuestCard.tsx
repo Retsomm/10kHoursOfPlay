@@ -8,6 +8,7 @@ import {
   cooldownDaysRemaining,
   isCooldownActive,
   isQuestOverdue,
+  parseDueDate,
   type Quest,
 } from "@/lib/quests";
 import { abandonQuest, deleteQuest, reportQuestOutcome, restartQuest, updateQuest } from "@/app/quests/actions";
@@ -15,7 +16,7 @@ import StarRating from "@/components/StarRating";
 import QuestFields, { type QuestFieldsValue } from "@/components/quests/QuestFields";
 
 const formatDueDate = (dueDate: string) =>
-  new Date(dueDate).toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" });
+  parseDueDate(dueDate).toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" });
 
 const toFieldsValue = (quest: Quest): QuestFieldsValue => ({
   title: quest.title,
