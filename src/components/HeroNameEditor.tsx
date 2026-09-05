@@ -15,7 +15,7 @@ const HeroNameEditor = ({ initialName }: { initialName: string }) => {
         onClick={() => setEditing(true)}
         className="text-left group"
       >
-        <h1 className="font-display text-2xl md:text-3xl font-bold group-hover:text-[var(--color-accent)] transition">
+        <h1 className="font-display text-2xl md:text-3xl font-bold group-hover:text-[var(--color-accent)] group-hover:glow-accent transition">
           {name || "未命名英雄"}
         </h1>
         <span className="text-sm text-dim">點擊編輯英雄名字</span>
@@ -41,7 +41,7 @@ const HeroNameEditor = ({ initialName }: { initialName: string }) => {
             setEditing(false);
           })
         }
-        className="px-3 py-2 rounded-lg bg-[var(--color-accent)] text-[#04121f] text-sm font-bold"
+        className="btn-primary rounded-lg text-sm px-3 py-2"
       >
         儲存
       </button>

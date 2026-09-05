@@ -29,10 +29,12 @@ const JourneyMap = ({
   events,
   chapterLabels,
   heroLevel,
+  nextChapterLabel,
 }: {
   events: JourneyEvent[];
   chapterLabels: Record<string, string>;
   heroLevel: HeroLevel;
+  nextChapterLabel?: string | null;
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState<number | null>(null);
@@ -48,7 +50,7 @@ const JourneyMap = ({
     return () => observer.disconnect();
   }, []);
 
-  if (events.length === 0) {
+  if (events.length === 0 && !nextChapterLabel) {
     return (
       <div className="panel p-5 text-center">
         <p className="text-sm text-dim">完成第一個關卡後，這裡會開始畫出你的成長路線地圖。</p>
@@ -66,13 +68,15 @@ const JourneyMap = ({
     );
   }
 
-  const totalNodes = events.length + 1; // +1：終點的 OP Hero 星星
+  const hasNextStation = Boolean(nextChapterLabel);
+  const totalNodes = events.length + (hasNextStation ? 1 : 0) + 1; // +下一站（若有）+ 終點 OP Hero
   const itemsPerRow = Math.min(MAX_ITEMS_PER_ROW, Math.max(MIN_ITEMS_PER_ROW, Math.floor(width / NODE_TARGET_WIDTH)));
   const spacingX = width / itemsPerRow;
   const points = layout(totalNodes, itemsPerRow, spacingX);
   const rows = Math.ceil(totalNodes / itemsPerRow);
   const height = PADDING_Y * 2 + (rows - 1) * SPACING_Y;
   const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+  const nextStationPoint = hasNextStation ? points[events.length] : null;
   const destination = points[points.length - 1];
 
   return (
@@ -81,7 +85,9 @@ const JourneyMap = ({
       <svg
         viewBox={`0 0 ${width} ${height}`}
         role="img"
-        aria-label={`人生旅程路線圖：已完成 ${events.length} 個關卡，${heroReached ? "已抵達" : "尚未抵達"} OP Hero 終點`}
+        aria-label={`人生旅程路線圖：已完成 ${events.length} 個關卡${
+          hasNextStation ? `，下一站是「${nextChapterLabel}」` : ""
+        }，${heroReached ? "已抵達" : "尚未抵達"} OP Hero 終點`}
         className="block w-full"
       >
         <title>成長路線地圖</title>
@@ -89,16 +95,16 @@ const JourneyMap = ({
 
         {events.map((event, i) => {
           const p = points[i];
-          const isLatest = i === events.length - 1;
           return (
             <g key={`${event.chapterId}-${event.tier}`}>
               <circle
                 cx={p.x}
                 cy={p.y}
-                r={isLatest ? NODE_R + 3 : NODE_R}
-                fill={isLatest ? "var(--color-gold)" : "var(--color-accent)"}
+                r={NODE_R}
+                fill="var(--color-accent)"
                 stroke="var(--color-bg)"
                 strokeWidth={2}
+                style={{ filter: "drop-shadow(0 0 6px rgba(56,189,248,0.8))" }}
               />
               <text x={p.x} y={p.y + NODE_R + 18} textAnchor="middle" fontSize={13} fill="var(--color-text-dim)">
                 {chapterLabels[event.chapterId] ?? event.chapterId}
@@ -110,6 +116,47 @@ const JourneyMap = ({
           );
         })}
 
+        {nextStationPoint && (
+          <g>
+            <circle
+              cx={nextStationPoint.x}
+              cy={nextStationPoint.y}
+              r={NODE_R + 2}
+              fill="var(--color-bg)"
+              stroke="var(--color-accent)"
+              strokeWidth={2}
+              strokeDasharray="3 3"
+            />
+            <text
+              x={nextStationPoint.x}
+              y={nextStationPoint.y + 5}
+              textAnchor="middle"
+              fontSize={12}
+              fill="var(--color-accent)"
+            >
+              →
+            </text>
+            <text
+              x={nextStationPoint.x}
+              y={nextStationPoint.y + NODE_R + 20}
+              textAnchor="middle"
+              fontSize={13}
+              fill="var(--color-accent)"
+            >
+              下一站
+            </text>
+            <text
+              x={nextStationPoint.x}
+              y={nextStationPoint.y + NODE_R + 35}
+              textAnchor="middle"
+              fontSize={11}
+              fill="var(--color-text-dim)"
+            >
+              {nextChapterLabel}
+            </text>
+          </g>
+        )}
+
         <g>
           <circle
             cx={destination.x}
@@ -118,6 +165,7 @@ const JourneyMap = ({
             fill={heroReached ? "var(--color-gold)" : "none"}
             stroke="var(--color-gold)"
             strokeWidth={2}
+            style={{ filter: "drop-shadow(0 0 8px rgba(251,191,36,0.75))" }}
           />
           <text
             x={destination.x}
@@ -128,7 +176,18 @@ const JourneyMap = ({
           >
             ★
           </text>
-          <text x={destination.x} y={destination.y + NODE_R + 22} textAnchor="middle" fontSize={12} fill="var(--color-gold)">
+          <text
+            x={destination.x}
+            y={destination.y + NODE_R + 22}
+            textAnchor="middle"
+            fontSize={11}
+            fill="var(--color-gold)"
+            style={{
+              fontFamily: "var(--font-pixel), var(--font-display), monospace",
+              letterSpacing: "0.05em",
+              textShadow: "0 0 12px rgba(251,191,36,0.7)",
+            }}
+          >
             OP HERO
           </text>
         </g>

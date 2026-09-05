@@ -101,11 +101,27 @@ const RadarChart = ({
               })}
 
               {hasData && (
-                <polygon points={dataPath} fill={color} fillOpacity={0.22} stroke={color} strokeWidth={2} />
+                <polygon
+                  points={dataPath}
+                  fill={color}
+                  fillOpacity={0.22}
+                  stroke={color}
+                  strokeWidth={2}
+                  style={{ filter: `drop-shadow(0 0 6px ${color})` }}
+                />
               )}
 
               {hasData &&
-                dataPoints.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={MARKER_R} fill={color} />)}
+                dataPoints.map((p, i) => (
+                  <circle
+                    key={i}
+                    cx={p.x}
+                    cy={p.y}
+                    r={MARKER_R}
+                    fill={color}
+                    style={{ filter: `drop-shadow(0 0 4px ${color})` }}
+                  />
+                ))}
 
               {axes.map((axis, i) => {
                 const labelPoint = pointAt(center, maxRadius + LABEL_OFFSET, angleFor(i));

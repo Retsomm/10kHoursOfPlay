@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { FutureVision } from "@/lib/heroStatus";
 
 const JourneyHighlights = ({
@@ -38,6 +39,12 @@ const JourneyHighlights = ({
           </div>
         )}
       </div>
+      <p className="text-sm text-dim">
+        想把這些目標變成可以持續追蹤、有星星門檻的任務？
+        <Link href="/quests" className="text-[var(--color-accent)] hover:underline">
+          前往任務追蹤器 →
+        </Link>
+      </p>
     </div>
   );
 };

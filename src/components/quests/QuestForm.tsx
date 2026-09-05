@@ -50,11 +50,7 @@ const QuestForm = ({ prefill }: { prefill: { title: string; reward: string } }) 
 
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-[#04121f] font-bold text-sm hover:brightness-110"
-      >
+      <button type="button" onClick={() => setOpen(true)} className="btn-primary rounded-lg px-4 py-2 text-sm">
         + 新增任務
       </button>
     );
@@ -127,14 +123,14 @@ const QuestForm = ({ prefill }: { prefill: { title: string; reward: string } }) 
           type="button"
           disabled={isPending || !title.trim()}
           onClick={handleSubmit}
-          className="px-4 py-2 rounded-lg bg-[var(--color-accent)] text-[#04121f] font-bold text-sm hover:brightness-110 disabled:opacity-50"
+          className="btn-primary rounded-lg px-4 py-2 text-sm"
         >
           建立任務
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
-          className="px-4 py-2 rounded-lg border border-[var(--color-border-bright)] text-sm hover:bg-white/5"
+          className="btn-secondary rounded-lg px-4 py-2 text-sm"
         >
           取消
         </button>

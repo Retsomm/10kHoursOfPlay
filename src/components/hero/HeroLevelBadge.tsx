@@ -9,15 +9,25 @@ const LEVEL_DESCRIPTION: Record<HeroLevel, string> = {
 };
 
 const HeroLevelBadge = ({ info }: { info: HeroLevelInfo }) => {
+  const pct = info.totalTiers > 0 ? (info.totalCompleted / info.totalTiers) * 100 : 0;
+
   return (
     <div className="panel p-5 min-w-0 flex flex-col items-center justify-center text-center gap-2 panel-glow">
-      <p className="font-display text-sm text-dim tracking-widest">目前等級</p>
-      <p className="font-display text-2xl font-black star">{HERO_LEVEL_LABEL[info.level]}</p>
+      <p className="font-pixel text-[10px] text-dim">目前等級</p>
+      <p className="font-display text-2xl font-black star glow-gold">{HERO_LEVEL_LABEL[info.level]}</p>
       <p className="text-sm text-dim">{LEVEL_DESCRIPTION[info.level]}</p>
-      <p className="text-sm text-dim">
-        {info.totalCompleted} / {info.totalTiers} 關卡
-        {info.phase1Complete && info.level !== "opHero" ? "・Phase I 已全通" : ""}
-      </p>
+      <div className="w-full mt-1 space-y-1">
+        <div className="flex items-center justify-between font-tech text-xs text-dim">
+          <span>XP</span>
+          <span>
+            {info.totalCompleted} / {info.totalTiers} 關卡
+            {info.phase1Complete && info.level !== "opHero" ? "・Phase I 已全通" : ""}
+          </span>
+        </div>
+        <div className="xp-track h-2">
+          <div className="xp-fill" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
     </div>
   );
 };

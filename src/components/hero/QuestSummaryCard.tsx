@@ -28,17 +28,20 @@ const QuestSummaryCard = ({
       ) : (
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
-            <p className="font-display text-xl font-black" style={{ color: "var(--color-accent)" }}>
+            <p className="font-display text-xl font-black glow-accent" style={{ color: "var(--color-accent)" }}>
               {counts.active}
             </p>
             <p className="text-sm text-dim">進行中</p>
           </div>
           <div>
-            <p className="font-display text-xl font-black star">{counts.completed}</p>
+            <p className="font-display text-xl font-black star glow-gold">{counts.completed}</p>
             <p className="text-sm text-dim">已完成</p>
           </div>
           <div>
-            <p className="font-display text-xl font-black" style={{ color: "var(--color-danger)" }}>
+            <p
+              className="font-display text-xl font-black"
+              style={{ color: "var(--color-danger)", textShadow: "0 0 20px rgba(248,113,113,0.55)" }}
+            >
               {counts.cooldown}
             </p>
             <p className="text-sm text-dim">冷卻中</p>

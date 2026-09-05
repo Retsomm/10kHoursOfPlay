@@ -5,6 +5,8 @@ import { CHAPTERS } from "@/data/chapters";
 import { computeHeroLevel, extractAlignmentRadar, extractSkillWeb } from "@/lib/heroStatus";
 import { getAnswersMap, getProfile, getProgressMap, getQuestSummary } from "@/lib/dashboardData";
 import { getChapterProgress, totalCompletedTiers } from "@/lib/progress";
+import { computeSixStepProgress } from "@/lib/sixSteps";
+import { computeNextStep } from "@/lib/nextStep";
 import SetupNotice from "@/components/SetupNotice";
 import DashboardShell from "@/components/DashboardShell";
 import ProfileTabs from "@/components/ProfileTabs";
@@ -35,6 +37,9 @@ const ProfilePage = async () => {
   const progressByChapter = Object.fromEntries(
     chapterIds.map((id) => [id, getChapterProgress(progressMap, id)]),
   );
+  const sixSteps = computeSixStepProgress(progressMap);
+  const ch9Done = totalCompletedTiers(progressMap, ["ch9"]);
+  const nextStep = computeNextStep(progressMap, sixSteps, ch9Done, questSummary.counts);
 
   return (
     <DashboardShell>
@@ -49,6 +54,8 @@ const ProfilePage = async () => {
         progressByChapter={progressByChapter}
         totalTiers={totalTiers}
         doneTiers={doneTiers}
+        sixSteps={sixSteps}
+        nextStep={nextStep}
       />
     </DashboardShell>
   );
