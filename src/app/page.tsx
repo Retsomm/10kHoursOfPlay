@@ -3,6 +3,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CHAPTERS } from "@/data/chapters";
 import { SIX_STEPS } from "@/lib/sixSteps";
 import { TIERS, TIER_LABEL } from "@/types/content";
@@ -197,9 +198,11 @@ const useTypewriter = (text: string, speed = 42, startDelay = 380) => {
 };
 
 const Home = () => {
+  const router = useRouter();
   const { output: typedTagline, done: typedDone } = useTypewriter(TAGLINE);
 
   const zoneRefs = useRef<(HTMLElement | null)[]>([]);
+  const transitionFillRef = useRef<HTMLDivElement>(null);
   const heroArtRef = useRef<HTMLDivElement>(null);
   const bgGridRef = useRef<HTMLDivElement>(null);
   const bgGlowRef = useRef<HTMLDivElement>(null);
@@ -214,6 +217,7 @@ const Home = () => {
   const [sliderValue, setSliderValue] = useState(0);
   const [activeStepN, setActiveStepN] = useState(1);
   const [activeChapterIdx, setActiveChapterIdx] = useState(0);
+  const [showTransition, setShowTransition] = useState(false);
 
   const activeStep = HOME_STEPS.find((s) => s.step === activeStepN) ?? HOME_STEPS[0];
   const activeChapter = CHAPTERS[activeChapterIdx];
@@ -223,6 +227,28 @@ const Home = () => {
     const el = zoneRefs.current[index];
     if (!el) return;
     window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+  };
+
+  // 頂部 HUD 的「開始旅程」：蓋一個置中 LOGO ＋粗長進度條的全螢幕過場，
+  // 條跑滿 0→100% 才真的跳轉，不要一點就馬上切頁面。
+  const handleStartJourney = () => {
+    if (showTransition) return;
+    setShowTransition(true);
+    const duration = 900;
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      if (transitionFillRef.current) transitionFillRef.current.style.width = `${(eased * 100).toFixed(1)}%`;
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        router.push("/login");
+      }
+    };
+
+    requestAnimationFrame(step);
   };
 
   useEffect(() => {
@@ -296,6 +322,27 @@ const Home = () => {
 
   return (
     <div style={{ position: "relative", overflow: "clip" }} className="min-w-0">
+      {showTransition && (
+        <div
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 px-6"
+          style={{ background: "#050914" }}
+        >
+          <img
+            src="/brand/logo-mark.svg"
+            alt=""
+            width={96}
+            height={96}
+            className="anim-float drop-shadow-[0_0_30px_rgba(56,189,248,0.7)]"
+          />
+          <p className="font-pixel text-xs text-dim tracking-[0.24em]">LOADING</p>
+          <div className="w-full max-w-[320px]">
+            <div className="xp-track h-4">
+              <div ref={transitionFillRef} className="xp-fill" style={{ width: "0%" }} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 背景視差層 */}
       <div
         ref={bgGridRef}
@@ -362,9 +409,13 @@ const Home = () => {
             </div>
           </div>
 
-          <Link href="/login" className="btn-primary rounded-lg px-4 h-9 flex items-center text-xs font-pixel shrink-0">
+          <button
+            type="button"
+            onClick={handleStartJourney}
+            className="btn-primary rounded-lg px-4 h-9 flex items-center text-xs font-pixel shrink-0"
+          >
             開始旅程
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -605,11 +656,11 @@ const Home = () => {
               const on = activeChapterIdx === i;
               const cleared = DEMO_TIER_STATES[i].every((x) => x === 2);
               return (
-                <Reveal key={chapter.id} delay={(i % 6) * 50}>
+                <Reveal key={chapter.id} delay={(i % 6) * 50} className="h-full">
                   <button
                     type="button"
                     onClick={() => setActiveChapterIdx(i)}
-                    className="w-full p-3.5 rounded-xl border text-left flex flex-col gap-2 transition hover:-translate-y-1"
+                    className="w-full h-full p-3.5 rounded-xl border text-left flex flex-col gap-2 transition hover:-translate-y-1"
                     style={{
                       borderColor: on ? GOLD : cleared ? "rgba(251,191,36,.45)" : "#1f3a63",
                       background: "linear-gradient(180deg,#0d1b33,#12274a)",

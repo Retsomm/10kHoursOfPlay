@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import SignOutButton from "./SignOutButton";
 import DashboardTabs from "./DashboardTabs";
 
 const DashboardShell = ({
@@ -28,7 +27,6 @@ const DashboardShell = ({
           <span className="font-pixel text-[10px] tracking-[0.1em] truncate">10,000 HOURS OF PLAY</span>
         </Link>
         <div className="flex items-center gap-4 shrink-0">
-          <SignOutButton />
           <UserButton />
         </div>
       </div>
