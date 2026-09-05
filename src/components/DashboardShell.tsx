@@ -1,18 +1,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
-import SignOutButton from "./SignOutButton";
 import DashboardTabs from "./DashboardTabs";
 
-const DashboardShell = ({
-  children,
-  maxWidth = "max-w-5xl",
-}: {
-  children: ReactNode;
-  maxWidth?: string;
-}) => {
+const DashboardShell = ({ children }: { children: ReactNode }) => {
   return (
-    <div className={`${maxWidth} mx-auto px-6 py-10 space-y-8 min-w-0`}>
+    <div className="max-w-5xl mx-auto px-6 py-10 space-y-8 min-w-0">
       <div className="flex items-center justify-between gap-4">
         <Link
           href="/"
@@ -28,7 +21,6 @@ const DashboardShell = ({
           <span className="font-pixel text-[10px] tracking-[0.1em] truncate">10,000 HOURS OF PLAY</span>
         </Link>
         <div className="flex items-center gap-4 shrink-0">
-          <SignOutButton />
           <UserButton />
         </div>
       </div>
