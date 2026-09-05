@@ -481,8 +481,8 @@ const Home = () => {
           </Reveal>
           <Reveal delay={140} className="flex-1 min-w-[200px]">
             <div className="panel p-4 flex flex-col items-center gap-1">
-              <CountUp target={36} className="font-display text-2xl font-black glow-accent" />
-              <span className="font-tech text-xs text-dim">個可挑戰關卡</span>
+              <CountUp target={12} className="font-display text-2xl font-black glow-accent" />
+              <span className="font-tech text-xs text-dim">個可挑戰章節</span>
             </div>
           </Reveal>
         </div>
@@ -654,7 +654,7 @@ const Home = () => {
             ZONE 4 · STAGE SELECT
           </span>
           <span className="flex-1 h-px" style={{ background: "linear-gradient(90deg,#1f3a63,transparent)" }} />
-          <span className="font-tech text-xs text-dim whitespace-nowrap">12 CHAPTERS · 36 關卡</span>
+          <span className="font-tech text-xs text-dim whitespace-nowrap">12 CHAPTERS · 完成任一難度即可通關</span>
         </Reveal>
 
         <div className="flex flex-wrap gap-5 items-start">

@@ -26,7 +26,7 @@ const FieldRenderer = ({
           rows={4}
           value={v}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="寫下你的答案……"
+          placeholder={field.placeholder ?? "寫下你的答案……"}
         />
       </div>
     );
@@ -36,9 +36,27 @@ const FieldRenderer = ({
     const v: ListValue = Array.isArray(value)
       ? (value as ListValue)
       : Array.from({ length: field.itemCount }, () => "");
+    const datalistId = field.suggestions ? `${field.key}-suggestions` : undefined;
+    const trimmed = v.map((item) => item.trim());
+    const duplicateIndexes = new Set<number>();
+    trimmed.forEach((item, i) => {
+      if (!item) return;
+      const firstIndex = trimmed.indexOf(item);
+      if (firstIndex !== i) {
+        duplicateIndexes.add(i);
+        duplicateIndexes.add(firstIndex);
+      }
+    });
     return (
       <div className="space-y-2">
         <label className="block text-sm font-medium">{field.label}</label>
+        {datalistId && (
+          <datalist id={datalistId}>
+            {field.suggestions!.map((option) => (
+              <option key={option} value={option} />
+            ))}
+          </datalist>
+        )}
         <div className="space-y-2">
           {Array.from({ length: field.itemCount }).map((_, i) => (
             <div key={i} className="flex items-center gap-2">
@@ -48,15 +66,22 @@ const FieldRenderer = ({
               <input
                 value={v[i] ?? ""}
                 placeholder={field.itemLabels?.[i] ?? `第 ${i + 1} 項`}
+                list={datalistId}
                 onChange={(e) => {
                   const next = [...v];
                   next[i] = e.target.value;
                   onChange(next);
                 }}
+                style={duplicateIndexes.has(i) ? { borderColor: "var(--color-danger)" } : undefined}
               />
             </div>
           ))}
         </div>
+        {duplicateIndexes.size > 0 && (
+          <p className="text-sm" style={{ color: "var(--color-danger)" }}>
+            有重複的項目（紅框標示），記得同一個屬性只需要選一次
+          </p>
+        )}
       </div>
     );
   }
@@ -170,7 +195,7 @@ const FieldRenderer = ({
                 {columns.map((col) => (
                   <td key={col.key} className="pr-2 align-top min-w-[160px]">
                     <input
-                      placeholder={col.label}
+                      placeholder={col.placeholder ?? col.label}
                       value={v[rowIdx]?.[col.key] ?? ""}
                       onChange={(e) => {
                         const next = v.map((row) => ({ ...row }));

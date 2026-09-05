@@ -60,9 +60,15 @@ export interface Quest {
   status: QuestStatus;
   cooldown_until: string | null;
   source_chapter_id: string | null;
+  due_date: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export const isQuestOverdue = (quest: Pick<Quest, "status" | "due_date">): boolean => {
+  if (quest.status !== "active" || !quest.due_date) return false;
+  return new Date(quest.due_date).getTime() < new Date().setHours(0, 0, 0, 0);
+};
 
 const COOLDOWN_DAYS = 14;
 

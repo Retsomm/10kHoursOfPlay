@@ -4,7 +4,7 @@ import { appConfigured } from "@/lib/env";
 import { CHAPTERS } from "@/data/chapters";
 import { computeHeroLevel, extractAlignmentRadar, extractSkillWeb } from "@/lib/heroStatus";
 import { getAnswersMap, getProfile, getProgressMap, getQuestSummary } from "@/lib/dashboardData";
-import { getChapterProgress, totalCompletedTiers } from "@/lib/progress";
+import { completedChapterCount, getChapterProgress, isChapterComplete } from "@/lib/progress";
 import { computeSixStepProgress } from "@/lib/sixSteps";
 import { computeNextStep } from "@/lib/nextStep";
 import SetupNotice from "@/components/SetupNotice";
@@ -32,14 +32,14 @@ const ProfilePage = async () => {
   const heroLevel = computeHeroLevel(progressMap, phase1Ids, chapterIds, "ch9");
   const alignmentAxes = extractAlignmentRadar(answersMap, "ch9");
   const skillWebAxes = extractSkillWeb(answersMap, "ch5-2");
-  const totalTiers = chapterIds.length * 3;
-  const doneTiers = totalCompletedTiers(progressMap, chapterIds);
+  const totalChapters = chapterIds.length;
+  const doneChapters = completedChapterCount(progressMap, chapterIds);
   const progressByChapter = Object.fromEntries(
     chapterIds.map((id) => [id, getChapterProgress(progressMap, id)]),
   );
   const sixSteps = computeSixStepProgress(progressMap);
-  const ch9Done = totalCompletedTiers(progressMap, ["ch9"]);
-  const nextStep = computeNextStep(progressMap, sixSteps, ch9Done, questSummary.counts);
+  const ch9Complete = isChapterComplete(getChapterProgress(progressMap, "ch9"));
+  const nextStep = computeNextStep(progressMap, sixSteps, ch9Complete, questSummary.counts);
 
   return (
     <DashboardShell>
@@ -52,8 +52,8 @@ const ProfilePage = async () => {
         questMigrationPending={questSummary.migrationPending}
         chapters={CHAPTERS}
         progressByChapter={progressByChapter}
-        totalTiers={totalTiers}
-        doneTiers={doneTiers}
+        totalChapters={totalChapters}
+        doneChapters={doneChapters}
         sixSteps={sixSteps}
         nextStep={nextStep}
       />

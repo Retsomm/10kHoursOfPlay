@@ -2,8 +2,7 @@ import Link from "next/link";
 import type { ChapterContent } from "@/types/content";
 import { TIERS, TIER_LABEL } from "@/types/content";
 import type { ChapterProgress } from "@/lib/progress";
-import { isTierCompleted, isTierUnlocked, completedTierCount } from "@/lib/progress";
-import LockIcon from "./LockIcon";
+import { isTierCompleted, isChapterComplete } from "@/lib/progress";
 
 const ChapterCard = ({
   chapter,
@@ -12,20 +11,19 @@ const ChapterCard = ({
   chapter: ChapterContent;
   progress: ChapterProgress;
 }) => {
-  const done = completedTierCount(progress);
-  const fullyComplete = done === 3;
+  const complete = isChapterComplete(progress);
 
   return (
     <Link
       href={`/chapters/${chapter.id}`}
-      className={`panel block p-5 transition hover:panel-glow ${fullyComplete ? "panel-glow" : ""}`}
+      className={`panel block p-5 transition hover:panel-glow ${complete ? "panel-glow" : ""}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="text-lg font-bold break-words">{chapter.title}</h3>
           <p className="text-sm text-dim mt-0.5">{chapter.subtitle}</p>
         </div>
-        {fullyComplete && (
+        {complete && (
           <span className="shrink-0 whitespace-nowrap text-sm px-2 py-1 rounded-full border border-[var(--color-gold)] star font-display glow-gold shadow-[0_0_16px_-4px_rgba(251,191,36,0.7)]">
             已通關
           </span>
@@ -34,7 +32,6 @@ const ChapterCard = ({
 
       <div className="mt-4 flex gap-3">
         {TIERS.map((tier) => {
-          const unlocked = isTierUnlocked(progress, tier);
           const completed = isTierCompleted(progress, tier);
           return (
             <div
@@ -42,15 +39,10 @@ const ChapterCard = ({
               className={`flex-1 rounded-lg border px-3 py-2 text-center text-sm transition ${
                 completed
                   ? "border-[var(--color-success)] text-[var(--color-success)] shadow-[0_0_14px_-4px_rgba(52,211,153,0.7)]"
-                  : unlocked
-                    ? "border-[var(--color-border-bright)] text-dim"
-                    : "border-[var(--color-border)] text-dim opacity-50"
+                  : "border-[var(--color-border-bright)] text-dim"
               }`}
             >
-              <div className="flex items-center justify-center gap-1">
-                {!unlocked && <LockIcon className="w-3 h-3" />}
-                {TIER_LABEL[tier]}
-              </div>
+              {TIER_LABEL[tier]}
             </div>
           );
         })}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CHAPTER_SHORT_LABEL } from "@/data/chapters";
 import type { SixStepProgress } from "@/lib/sixSteps";
 
 const SixStepRoadmap = ({ steps }: { steps: SixStepProgress[] }) => {
@@ -9,12 +10,10 @@ const SixStepRoadmap = ({ steps }: { steps: SixStepProgress[] }) => {
         {steps.map((step) => {
           const complete = step.done === step.total;
           const started = step.done > 0;
-          const pct = step.total > 0 ? (step.done / step.total) * 100 : 0;
           return (
-            <Link
+            <div
               key={step.step}
-              href={`/chapters/${step.chapterIds[0]}`}
-              className={`flex-1 min-w-[120px] rounded-lg border px-3 py-3 text-center transition hover:panel-glow space-y-1.5 ${
+              className={`flex-1 min-w-[140px] rounded-lg border px-3 py-3 text-center space-y-2 ${
                 complete
                   ? "border-[var(--color-success)] shadow-[0_0_16px_-4px_rgba(52,211,153,0.6)]"
                   : started
@@ -22,22 +21,39 @@ const SixStepRoadmap = ({ steps }: { steps: SixStepProgress[] }) => {
                     : "border-[var(--color-border)] opacity-70"
               }`}
             >
-              <p className="font-pixel text-[9px] text-dim">STEP {step.step}</p>
-              <p className="font-bold">{step.label}</p>
-              <p className={`text-sm font-tech ${complete ? "text-[var(--color-success)]" : "text-dim"}`}>
-                {step.done} / {step.total}
-              </p>
-              <div className="xp-track h-1">
-                <div
-                  className="xp-fill"
-                  style={{
-                    width: `${pct}%`,
-                    background: complete ? "var(--color-success)" : undefined,
-                    boxShadow: complete ? "0 0 10px rgba(52,211,153,0.8)" : undefined,
-                  }}
-                />
+              <div>
+                <p className="font-pixel text-[9px] text-dim">STEP {step.step}</p>
+                <p className="font-bold">{step.label}</p>
               </div>
-            </Link>
+              {/* 每個章節各自的完成度分開顯示、各自可以點擊——
+                  一步裡有兩個章節時（例如天賦/領導風格），兩個都要能直接點進去看，
+                  不要整張卡片只連去其中一個章節。 */}
+              <div className="space-y-1">
+                {step.chapters.map((c) => (
+                  <Link
+                    key={c.chapterId}
+                    href={`/chapters/${c.chapterId}`}
+                    className="flex items-center justify-between gap-2 text-sm rounded px-1 -mx-1 transition hover:bg-white/5"
+                  >
+                    <span className={c.complete ? "text-[var(--color-success)]" : "text-dim"}>
+                      {CHAPTER_SHORT_LABEL[c.chapterId] ?? c.chapterId}
+                    </span>
+                    <span className="flex gap-0.5">
+                      {[0, 1, 2].map((i) => (
+                        <span
+                          key={i}
+                          className="w-1.5 h-1.5 rounded-sm border"
+                          style={{
+                            background: i < c.done ? "var(--color-success)" : "transparent",
+                            borderColor: i < c.done ? "var(--color-success)" : "var(--color-border-bright)",
+                          }}
+                        />
+                      ))}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           );
         })}
       </div>

@@ -11,7 +11,7 @@ import {
   extractPyramid,
 } from "@/lib/heroStatus";
 import { getAnswersMap, getProgressMap, getQuestSummary } from "@/lib/dashboardData";
-import { totalCompletedTiers } from "@/lib/progress";
+import { getChapterProgress, isChapterComplete } from "@/lib/progress";
 import { computeSixStepProgress } from "@/lib/sixSteps";
 import { computeNextStep } from "@/lib/nextStep";
 import SetupNotice from "@/components/SetupNotice";
@@ -39,8 +39,8 @@ const JourneyPage = async () => {
   const heroLevel = computeHeroLevel(progressMap, phase1Ids, chapterIds, "ch9").level;
   const journeyEvents = extractJourneyEvents(progressMap, chapterIds);
   const sixSteps = computeSixStepProgress(progressMap);
-  const ch9Done = totalCompletedTiers(progressMap, ["ch9"]);
-  const nextStep = computeNextStep(progressMap, sixSteps, ch9Done, questSummary.counts);
+  const ch9Complete = isChapterComplete(getChapterProgress(progressMap, "ch9"));
+  const nextStep = computeNextStep(progressMap, sixSteps, ch9Complete, questSummary.counts);
   const nextChapterId = nextStep.href.startsWith("/chapters/")
     ? nextStep.href.slice("/chapters/".length)
     : null;

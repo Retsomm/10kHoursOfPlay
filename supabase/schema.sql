@@ -52,9 +52,15 @@ create table if not exists public.quests (
   status text not null default 'active' check (status in ('active', 'completed', 'cooldown', 'abandoned')),
   cooldown_until timestamptz,
   source_chapter_id text,
+  due_date date,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- 既有資料庫在 quests 表建立後才加上 due_date（SMART 原則的「有時限」欄位），
+-- 用 add column if not exists 讓已經跑過舊版 schema 的專案重跑這份檔案時能補上這個欄位，
+-- 不用另外寫遷移檔——跟上面 create table if not exists 一樣是冪等、不影響既有資料的寫法。
+alter table public.quests add column if not exists due_date date;
 
 alter table public.profiles enable row level security;
 alter table public.chapter_progress enable row level security;

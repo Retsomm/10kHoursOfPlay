@@ -1,19 +1,38 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import {
   QUEST_SCOPE_LABEL,
   QUEST_STATUS_LABEL,
   QUEST_TYPE_LABEL,
   cooldownDaysRemaining,
   isCooldownActive,
+  isQuestOverdue,
   type Quest,
 } from "@/lib/quests";
-import { abandonQuest, reportQuestOutcome, restartQuest } from "@/app/quests/actions";
+import { abandonQuest, deleteQuest, reportQuestOutcome, restartQuest, updateQuest } from "@/app/quests/actions";
 import StarRating from "@/components/StarRating";
+import QuestFields, { type QuestFieldsValue } from "@/components/quests/QuestFields";
+
+const formatDueDate = (dueDate: string) =>
+  new Date(dueDate).toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" });
+
+const toFieldsValue = (quest: Quest): QuestFieldsValue => ({
+  title: quest.title,
+  scope: quest.scope,
+  questType: quest.quest_type ?? "",
+  star1: quest.star1_criteria ?? "",
+  star2: quest.star2_criteria ?? "",
+  star3: quest.star3_criteria ?? "",
+  dueDate: quest.due_date ?? "",
+  reward: quest.reward ?? "",
+});
 
 const QuestCard = ({ quest }: { quest: Quest }) => {
   const [isPending, startTransition] = useTransition();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState<QuestFieldsValue>(() => toFieldsValue(quest));
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const handleReport = (stars: 0 | 1 | 2 | 3) => {
     startTransition(async () => {
@@ -33,7 +52,63 @@ const QuestCard = ({ quest }: { quest: Quest }) => {
     });
   };
 
+  const handleDelete = () => {
+    startTransition(async () => {
+      await deleteQuest(quest.id);
+    });
+  };
+
+  const startEditing = () => {
+    setEditValue(toFieldsValue(quest));
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editValue.title.trim()) return;
+    startTransition(async () => {
+      await updateQuest(quest.id, {
+        title: editValue.title,
+        scope: editValue.scope,
+        questType: editValue.questType || undefined,
+        star1Criteria: editValue.star1 || undefined,
+        star2Criteria: editValue.star2 || undefined,
+        star3Criteria: editValue.star3 || undefined,
+        reward: editValue.reward || undefined,
+        dueDate: editValue.dueDate || undefined,
+      });
+      setIsEditing(false);
+    });
+  };
+
   const cooldownActive = isCooldownActive(quest);
+  const overdue = isQuestOverdue(quest);
+
+  if (isEditing) {
+    return (
+      <div className="panel p-5 min-w-0 space-y-4">
+        <p className="font-display text-sm text-dim tracking-widest">編輯任務</p>
+        <QuestFields value={editValue} onChange={(p) => setEditValue((v) => ({ ...v, ...p }))} showSmartIntro={false} />
+        <div className="flex items-center gap-3 pt-2">
+          <button
+            type="button"
+            disabled={isPending || !editValue.title.trim()}
+            onClick={handleSaveEdit}
+            className="btn-primary rounded-lg px-4 py-2 text-sm"
+          >
+            儲存
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsEditing(false)}
+            className="btn-secondary rounded-lg px-4 py-2 text-sm"
+          >
+            取消
+          </button>
+          {isPending && <span className="text-sm text-dim">處理中…</span>}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`panel p-5 min-w-0 space-y-3 ${quest.status === "completed" ? "panel-glow" : ""}`}>
@@ -56,6 +131,13 @@ const QuestCard = ({ quest }: { quest: Quest }) => {
           {quest.star2_criteria && <p>★★ {quest.star2_criteria}</p>}
           {quest.star3_criteria && <p>★★★ {quest.star3_criteria}</p>}
         </div>
+      )}
+
+      {quest.due_date && (
+        <p className="text-sm break-words" style={{ color: overdue ? "var(--color-danger)" : "var(--color-text-dim)" }}>
+          時限：{formatDueDate(quest.due_date)}
+          {overdue ? "（已逾期）" : ""}
+        </p>
       )}
 
       {quest.reward && <p className="text-sm text-dim break-words">獎勵：{quest.reward}</p>}
@@ -111,16 +193,45 @@ const QuestCard = ({ quest }: { quest: Quest }) => {
         </div>
       )}
 
-      {quest.status === "active" && (
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={handleAbandon}
-          className="text-sm text-dim hover:text-[var(--color-danger)]"
-        >
-          放棄這個任務
+      <div className="flex flex-wrap items-center gap-3 pt-2">
+        <button type="button" onClick={startEditing} className="text-sm text-dim hover:text-[var(--color-accent)]">
+          編輯
         </button>
-      )}
+        {quest.status === "active" && (
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={handleAbandon}
+            className="text-sm text-dim hover:text-[var(--color-danger)]"
+          >
+            放棄這個任務
+          </button>
+        )}
+        {confirmingDelete ? (
+          <span className="text-sm flex items-center gap-2">
+            確定要刪除嗎？
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={handleDelete}
+              className="text-[var(--color-danger)] hover:underline"
+            >
+              確定刪除
+            </button>
+            <button type="button" onClick={() => setConfirmingDelete(false)} className="text-dim hover:underline">
+              取消
+            </button>
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setConfirmingDelete(true)}
+            className="text-sm text-dim hover:text-[var(--color-danger)]"
+          >
+            刪除
+          </button>
+        )}
+      </div>
     </div>
   );
 };

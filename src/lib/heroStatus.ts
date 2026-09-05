@@ -2,7 +2,7 @@ import { TIERS, type Tier } from "@/types/content";
 import type { AnswersMap } from "./answers";
 import { getTierAnswers } from "./answers";
 import type { ProgressMap } from "./progress";
-import { completedTierCount, getChapterProgress, totalCompletedTiers } from "./progress";
+import { completedChapterCount, getChapterProgress, isChapterComplete } from "./progress";
 
 export type HeroLevel = "npc" | "player" | "opPlayer" | "opHero";
 
@@ -16,29 +16,30 @@ export const HERO_LEVEL_LABEL: Record<HeroLevel, string> = {
 export interface HeroLevelInfo {
   level: HeroLevel;
   phase1Complete: boolean;
-  totalCompleted: number;
-  totalTiers: number;
+  completedChapters: number;
+  totalChapters: number;
 }
 
+// 章節只要完成任一難度就算通關（見 progress.ts 的 isChapterComplete），
+// 所以這裡一律用「已通關的章節數」而不是「已完成的關卡數」來算等級。
 export const computeHeroLevel = (
   progressMap: ProgressMap,
   phase1ChapterIds: string[],
   allChapterIds: string[],
   ch9Id: string,
 ): HeroLevelInfo => {
-  const totalTiers = allChapterIds.length * TIERS.length;
-  const totalCompleted = totalCompletedTiers(progressMap, allChapterIds);
-  const phase1Total = phase1ChapterIds.length * TIERS.length;
-  const phase1Completed = totalCompletedTiers(progressMap, phase1ChapterIds);
-  const phase1Complete = phase1Total > 0 && phase1Completed === phase1Total;
-  const ch9Complete = completedTierCount(getChapterProgress(progressMap, ch9Id)) === TIERS.length;
+  const totalChapters = allChapterIds.length;
+  const completedChapters = completedChapterCount(progressMap, allChapterIds);
+  const phase1Complete =
+    phase1ChapterIds.length > 0 && completedChapterCount(progressMap, phase1ChapterIds) === phase1ChapterIds.length;
+  const ch9Complete = isChapterComplete(getChapterProgress(progressMap, ch9Id));
 
   let level: HeroLevel = "npc";
-  if (totalTiers > 0 && totalCompleted === totalTiers) level = "opHero";
+  if (totalChapters > 0 && completedChapters === totalChapters) level = "opHero";
   else if (phase1Complete && ch9Complete) level = "opPlayer";
-  else if (totalCompleted > 0) level = "player";
+  else if (completedChapters > 0) level = "player";
 
-  return { level, phase1Complete, totalCompleted, totalTiers };
+  return { level, phase1Complete, completedChapters, totalChapters };
 };
 
 const cleanList = (value: unknown): string[] =>
@@ -58,7 +59,11 @@ export const extractPyramid = (
 ): PyramidData => {
   const tierAnswers = getTierAnswers(answersMap, source.chapterId, source.tier);
   const rawEdge = source.edgeKey ? tierAnswers[source.edgeKey] : undefined;
-  const edge = typeof rawEdge === "string" && rawEdge.trim() ? rawEdge.trim() : undefined;
+  // edge 欄位存的是單一項目的 list（陣列），舊資料若是純字串也一併相容
+  const edge =
+    typeof rawEdge === "string"
+      ? rawEdge.trim() || undefined
+      : cleanList(rawEdge)[0];
   return {
     edge,
     ring: cleanList(tierAnswers[source.ringKey]),
@@ -143,10 +148,18 @@ export const extractJourneyEvents = (progressMap: ProgressMap, chapterIds: strin
   const events: JourneyEvent[] = [];
   for (const chapterId of chapterIds) {
     const progress = getChapterProgress(progressMap, chapterId);
+    // 章節現在完成任一難度就算通關，同一章節常常不只一個難度有完成時間——
+    // 只取最早完成的那個難度當這個章節在地圖上的里程碑，同一個章節在地圖上
+    // 只出現一次，不要因為多填了一種難度就重複出現。
+    let earliest: { tier: Tier; completedAt: string } | null = null;
     for (const tier of TIERS) {
       const completedAt = progress[tier];
-      if (completedAt) events.push({ chapterId, tier, completedAt });
+      if (!completedAt) continue;
+      if (!earliest || new Date(completedAt).getTime() < new Date(earliest.completedAt).getTime()) {
+        earliest = { tier, completedAt };
+      }
     }
+    if (earliest) events.push({ chapterId, tier: earliest.tier, completedAt: earliest.completedAt });
   }
   return events.sort((a, b) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime());
 };
