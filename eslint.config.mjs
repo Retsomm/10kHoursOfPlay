@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 設計參考素材（Claude Design canvas 匯出），不是應用程式原始碼
+    "網站UI遊戲化優化/**",
   ]),
 ]);
 

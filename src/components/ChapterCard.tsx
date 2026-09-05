@@ -26,7 +26,7 @@ const ChapterCard = ({
           <p className="text-sm text-dim mt-0.5">{chapter.subtitle}</p>
         </div>
         {fullyComplete && (
-          <span className="shrink-0 whitespace-nowrap text-sm px-2 py-1 rounded-full border border-[var(--color-gold)] star font-display">
+          <span className="shrink-0 whitespace-nowrap text-sm px-2 py-1 rounded-full border border-[var(--color-gold)] star font-display glow-gold shadow-[0_0_16px_-4px_rgba(251,191,36,0.7)]">
             已通關
           </span>
         )}
@@ -39,9 +39,9 @@ const ChapterCard = ({
           return (
             <div
               key={tier}
-              className={`flex-1 rounded-lg border px-3 py-2 text-center text-sm ${
+              className={`flex-1 rounded-lg border px-3 py-2 text-center text-sm transition ${
                 completed
-                  ? "border-[var(--color-success)] text-[var(--color-success)]"
+                  ? "border-[var(--color-success)] text-[var(--color-success)] shadow-[0_0_14px_-4px_rgba(52,211,153,0.7)]"
                   : unlocked
                     ? "border-[var(--color-border-bright)] text-dim"
                     : "border-[var(--color-border)] text-dim opacity-50"

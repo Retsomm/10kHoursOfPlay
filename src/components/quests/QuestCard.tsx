@@ -103,7 +103,7 @@ const QuestCard = ({ quest }: { quest: Quest }) => {
               type="button"
               disabled={isPending}
               onClick={handleRestart}
-              className="text-sm px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-[#04121f] font-bold hover:brightness-110 disabled:opacity-50"
+              className="btn-primary rounded-lg text-sm px-3 py-1.5"
             >
               重新開始
             </button>

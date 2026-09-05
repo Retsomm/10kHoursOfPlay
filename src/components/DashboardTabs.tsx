@@ -22,7 +22,7 @@ const DashboardTabs = () => {
             href={tab.href}
             className={`px-4 py-2 text-sm font-display shrink-0 border-b-2 -mb-px transition ${
               active
-                ? "border-[var(--color-accent)] text-[var(--color-accent)]"
+                ? "border-[var(--color-accent)] text-[var(--color-accent)] glow-accent"
                 : "border-transparent text-dim hover:text-[var(--color-text)]"
             }`}
           >

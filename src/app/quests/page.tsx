@@ -38,7 +38,7 @@ const QuestsPage = async () => {
   return (
     <DashboardShell maxWidth="max-w-3xl">
       <div>
-        <p className="font-display text-sm text-dim">QUEST LOG</p>
+        <p className="font-pixel text-[10px] text-dim">QUEST LOG</p>
         <h1 className="font-display text-2xl md:text-3xl font-bold mt-1">任務追蹤器</h1>
         <p className="text-dim mt-1">
           三星成就制：先設定 1～3 星的門檻，完成後回報結果——0

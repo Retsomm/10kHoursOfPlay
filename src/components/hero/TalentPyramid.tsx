@@ -17,7 +17,12 @@ const TalentPyramid = ({ title, data }: { title: string; data: PyramidData }) =>
             aria-label={`${title}金字塔：王牌 ${data.edge ?? "無"}，戒指 ${data.ring.length} 項，基座 ${data.base.length} 項`}
           >
             <title>{title}</title>
-            <polygon points="100,10 130,60 70,60" fill="var(--color-gold)" fillOpacity={0.85} />
+            <polygon
+              points="100,10 130,60 70,60"
+              fill="var(--color-gold)"
+              fillOpacity={0.85}
+              style={{ filter: "drop-shadow(0 0 8px rgba(251,191,36,0.6))" }}
+            />
             <polygon points="70,60 130,60 160,100 40,100" fill="var(--color-accent)" fillOpacity={0.55} />
             <polygon points="40,100 160,100 185,135 15,135" fill="var(--color-accent-2)" fillOpacity={0.3} />
           </svg>

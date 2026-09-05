@@ -6,11 +6,15 @@ import HeroLevelBadge from "./hero/HeroLevelBadge";
 import AlignmentRadar from "./hero/AlignmentRadar";
 import SkillWebRadar from "./hero/SkillWebRadar";
 import QuestSummaryCard from "./hero/QuestSummaryCard";
+import SixStepRoadmap from "./hero/SixStepRoadmap";
+import NextStepBanner from "./hero/NextStepBanner";
 import ChapterCard from "./ChapterCard";
 import { PHASE_LABEL, type ChapterContent, type Phase } from "@/types/content";
 import type { ChapterProgress } from "@/lib/progress";
 import type { HeroLevelInfo, RadarAxis } from "@/lib/heroStatus";
 import type { QuestCounts } from "@/lib/quests";
+import type { SixStepProgress } from "@/lib/sixSteps";
+import type { NextStepSuggestion } from "@/lib/nextStep";
 
 const SUB_TABS = [
   { key: "overview", label: "總覽" },
@@ -34,6 +38,8 @@ const ProfileTabs = ({
   progressByChapter,
   totalTiers,
   doneTiers,
+  sixSteps,
+  nextStep,
 }: {
   defaultName: string;
   heroLevel: HeroLevelInfo;
@@ -45,6 +51,8 @@ const ProfileTabs = ({
   progressByChapter: Record<string, ChapterProgress>;
   totalTiers: number;
   doneTiers: number;
+  sixSteps: SixStepProgress[];
+  nextStep: NextStepSuggestion;
 }) => {
   const [active, setActive] = useState<SubTabKey>("overview");
 
@@ -58,7 +66,7 @@ const ProfileTabs = ({
             onClick={() => setActive(tab.key)}
             className={`px-3 py-1.5 rounded-full text-sm font-display transition ${
               active === tab.key
-                ? "bg-[var(--color-accent)] text-[#04121f]"
+                ? "bg-[var(--color-accent)] text-[#04121f] shadow-[0_0_20px_-4px_rgba(56,189,248,0.8)]"
                 : "border border-[var(--color-border-bright)] text-dim hover:bg-white/5"
             }`}
           >
@@ -75,11 +83,15 @@ const ProfileTabs = ({
       )}
 
       {active === "overview" && (
-        <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))]">
-          <HeroLevelBadge info={heroLevel} />
-          <AlignmentRadar axes={alignmentAxes} chapterHref="/chapters/ch9" />
-          <SkillWebRadar axes={skillWebAxes} chapterHref="/chapters/ch5-2" />
-          <QuestSummaryCard counts={questCounts} migrationPending={questMigrationPending} />
+        <div className="space-y-6">
+          <NextStepBanner suggestion={nextStep} />
+          <SixStepRoadmap steps={sixSteps} />
+          <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(min(240px,100%),1fr))]">
+            <HeroLevelBadge info={heroLevel} />
+            <AlignmentRadar axes={alignmentAxes} chapterHref="/chapters/ch9" />
+            <SkillWebRadar axes={skillWebAxes} chapterHref="/chapters/ch5-2" />
+            <QuestSummaryCard counts={questCounts} migrationPending={questMigrationPending} />
+          </div>
         </div>
       )}
 
@@ -87,14 +99,14 @@ const ProfileTabs = ({
         <div className="space-y-6">
           <div className="panel p-5">
             <div className="flex items-center justify-between text-sm mb-2">
-              <span className="text-dim">整體進度</span>
-              <span className="font-display">
+              <span className="font-pixel text-[10px] text-dim">XP</span>
+              <span className="font-tech">
                 {doneTiers} / {totalTiers} 關卡
               </span>
             </div>
-            <div className="h-2 rounded-full bg-black/40 overflow-hidden">
+            <div className="xp-track h-2">
               <div
-                className="h-full bg-[var(--color-accent)]"
+                className="xp-fill"
                 style={{ width: `${totalTiers > 0 ? (doneTiers / totalTiers) * 100 : 0}%` }}
               />
             </div>

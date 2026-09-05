@@ -8,6 +8,7 @@
   --color-border-bright: #2f5d99;
   --color-accent: #38bdf8;
   --color-accent-2: #7dd3fc;
+  --color-accent-pink: #f472b6;
   --color-gold: #fbbf24;
   --color-text: #e8f1fc;
   --color-text-dim: #8fa6c4;
@@ -23,6 +24,7 @@
   --color-border-bright: var(--color-border-bright);
   --color-accent: var(--color-accent);
   --color-accent-2: var(--color-accent-2);
+  --color-accent-pink: var(--color-accent-pink);
   --color-gold: var(--color-gold);
   --color-text: var(--color-text);
   --color-text-dim: var(--color-text-dim);
@@ -30,21 +32,123 @@
   --color-success: var(--color-success);
   --font-display: var(--font-orbitron);
   --font-sans: var(--font-noto);
+  --font-pixel: var(--font-press-start);
+  --font-tech: var(--font-share-tech);
 }
 
 body {
+  position: relative;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56, 189, 248, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(251, 191, 36, 0.06), transparent),
+    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(56, 189, 248, 0.18), transparent),
+    radial-gradient(ellipse 60% 45% at 92% 100%, rgba(244, 114, 182, 0.1), transparent),
     var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100vh;
 }
 
+/* 全站 CRT 掃描線材質：極低透明度、不吃互動事件 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.03) 0 1px,
+    transparent 1px 3px
+  );
+}
+
 .font-display {
   font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
   letter-spacing: 0.04em;
+}
+
+/* 像素標籤字體：僅拉丁字母/數字有字面，中文字會自動退回 font-display */
+.font-pixel {
+  font-family: var(--font-pixel), var(--font-display), var(--font-sans), monospace;
+  letter-spacing: 0.1em;
+}
+
+.font-tech {
+  font-family: var(--font-tech), var(--font-sans), monospace;
+}
+
+.glow-accent {
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.55);
+}
+
+.glow-gold {
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.55);
+}
+
+@keyframes anim-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.15; }
+}
+
+@keyframes anim-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+
+@keyframes anim-pulse-glow {
+  0%, 100% { box-shadow: 0 0 22px -6px rgba(56, 189, 248, 0.55); }
+  50% { box-shadow: 0 0 40px -4px rgba(56, 189, 248, 0.95); }
+}
+
+@keyframes anim-scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.anim-blink {
+  animation: anim-blink 1s steps(1) infinite;
+}
+
+.anim-float {
+  animation: anim-float 5.5s ease-in-out infinite;
+}
+
+.anim-float-fast {
+  animation: anim-float 2.2s ease-in-out infinite;
+}
+
+.anim-pulse-glow {
+  animation: anim-pulse-glow 2.4s ease-in-out infinite;
+}
+
+.anim-scan {
+  animation: anim-scan 7s linear infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-blink,
+  .anim-float,
+  .anim-float-fast,
+  .anim-pulse-glow,
+  .anim-scan {
+    animation: none;
+  }
+
+  .reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .panel {
@@ -71,6 +175,69 @@ body {
   color: var(--color-border-bright);
 }
 
+/*
+ * .btn-primary / .btn-secondary 只負責顏色與發光效果，不帶 padding/border-radius——
+ * Tailwind v4 的 utility classes 活在 @layer utilities 裡，unlayered 的自訂規則
+ * (這份檔案裡 @import 之後、沒有包在任何 @layer 的規則) 一律贏過它，跟原始碼順序無關。
+ * 若這裡寫死 padding，呼叫端疊加的 px- / py- 系列 utility 會被無聲蓋掉——維持跟既有 .panel
+ * 一樣「不帶間距」的慣例，尺寸一律由呼叫端的 Tailwind class 決定。
+ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: var(--color-accent);
+  color: #04121f;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4), 0 0 24px -6px rgba(56, 189, 248, 0.75);
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  box-shadow: none;
+  filter: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid var(--color-border-bright);
+  color: var(--color-text);
+  transition: background 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+}
+
+/* 高度由呼叫端的 Tailwind h-* 決定（理由同上，這裡故意不寫死） */
+.xp-track {
+  border-radius: 999px;
+  border: 1px solid var(--color-border-bright);
+  background: #04101f;
+  overflow: hidden;
+}
+
+.xp-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.85);
+}
+
 input,
 textarea,
 select {
@@ -81,6 +248,64 @@ select {
   padding: 0.5rem 0.75rem;
   width: 100%;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/*
+ * type=range 是滑桿控制項，不是文字輸入框，卻會繼承上面 input 的 padding/border/background——
+ * padding 會把原生滑軌實際渲染的內容框往內縮，導致拖到底時滑鈕看起來卡在邊界內側，
+ * 不是真的滑不到 0%/100%（value 其實正確），只是視覺上進不去那圈 padding。
+ */
+input[type="range"] {
+  padding: 0;
+  border: none;
+  background: transparent;
+  accent-color: var(--color-accent);
+}
+
+/*
+ * 等級路線的軌道線／發光填充——手機直排、sm 以上橫排共用同一組節點，
+ * 靠 CSS 變數 --rank-progress（JS 只設定這個百分比，不直接碰 width/height）
+ * 讓同一個進度值在兩種排列各自綁到對的維度，不用為兩種版面各生一份 DOM。
+ */
+.rank-line {
+  position: absolute;
+  left: 13px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(180deg, #1f3a63 0 8px, transparent 8px 14px);
+}
+
+.rank-fill {
+  position: absolute;
+  left: 13px;
+  top: 0;
+  width: 2px;
+  height: var(--rank-progress, 0%);
+  background: linear-gradient(180deg, var(--color-accent), var(--color-gold));
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.9);
+  transition: height 0.25s ease;
+}
+
+@media (min-width: 640px) {
+  .rank-line {
+    left: 0;
+    right: 0;
+    top: 50%;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, #1f3a63 0 8px, transparent 8px 14px);
+  }
+
+  .rank-fill {
+    left: 0;
+    top: 50%;
+    width: var(--rank-progress, 0%);
+    height: 2px;
+    transition: width 0.25s ease;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-gold));
+  }
 }
 
 input:focus,

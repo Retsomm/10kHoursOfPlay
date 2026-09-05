@@ -12,7 +12,7 @@ const StarRating = ({
       {Array.from({ length: total }).map((_, i) => (
         <span
           key={i}
-          className={i < filled ? "star" : "star-off"}
+          className={i < filled ? "star glow-gold" : "star-off"}
           onClick={onRate ? () => onRate(i + 1) : undefined}
           role={onRate ? "button" : undefined}
           tabIndex={onRate ? 0 : undefined}
