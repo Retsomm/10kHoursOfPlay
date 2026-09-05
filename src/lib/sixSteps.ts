@@ -1,4 +1,4 @@
-import { totalCompletedTiers, type ProgressMap } from "./progress";
+import { completedTierCount, getChapterProgress, isChapterComplete, type ProgressMap } from "./progress";
 
 export interface SixStepDef {
   step: number;
@@ -18,15 +18,38 @@ export const SIX_STEPS: SixStepDef[] = [
   { step: 6, label: "達成任務", chapterIds: ["ch8"] },
 ];
 
-export interface SixStepProgress extends SixStepDef {
+export interface SixStepChapterProgress {
+  chapterId: string;
+  /** 這個章節簡單/中等/困難各自完成了幾個（0～3），純粹顯示用 */
   done: number;
+  /** 章節只要完成任一難度就算通關（見 progress.ts 的 isChapterComplete） */
+  complete: boolean;
+}
+
+export interface SixStepProgress extends SixStepDef {
+  /** 這一步裡有幾個章節已經通關（不是關卡數） */
+  done: number;
+  /** 這一步總共有幾個章節 */
   total: number;
+  /** 每個章節各自的完成度，不合併成單一分數，避免混淆 */
+  chapters: SixStepChapterProgress[];
 }
 
 export const computeSixStepProgress = (progressMap: ProgressMap): SixStepProgress[] => {
-  return SIX_STEPS.map((step) => ({
-    ...step,
-    done: totalCompletedTiers(progressMap, step.chapterIds),
-    total: step.chapterIds.length * 3,
-  }));
+  return SIX_STEPS.map((step) => {
+    const chapters = step.chapterIds.map((chapterId) => {
+      const progress = getChapterProgress(progressMap, chapterId);
+      return {
+        chapterId,
+        done: completedTierCount(progress),
+        complete: isChapterComplete(progress),
+      };
+    });
+    return {
+      ...step,
+      done: chapters.filter((c) => c.complete).length,
+      total: step.chapterIds.length,
+      chapters,
+    };
+  });
 };

@@ -78,6 +78,10 @@ const JourneyMap = ({
   const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
   const nextStationPoint = hasNextStation ? points[events.length] : null;
   const destination = points[points.length - 1];
+  // 蛇形排版：偶數列由左至右、奇數列由右至左，箭頭方向要跟著這一列實際前進方向走，
+  // 不能寫死向右——下一站節點如果剛好落在奇數列，路線其實是往左走。
+  const nextStationRowReversed = hasNextStation && Math.floor(events.length / itemsPerRow) % 2 === 1;
+  const nextStationArrow = nextStationRowReversed ? "←" : "→";
 
   return (
     <div ref={containerRef} className="panel p-5 space-y-2 min-w-0">
@@ -134,7 +138,7 @@ const JourneyMap = ({
               fontSize={12}
               fill="var(--color-accent)"
             >
-              →
+              {nextStationArrow}
             </text>
             <text
               x={nextStationPoint.x}

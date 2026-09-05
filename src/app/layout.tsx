@@ -47,6 +47,7 @@ const RootLayout = ({ children }: LayoutProps<"/">) => {
     <html
       lang="zh-Hant"
       className={`${orbitron.variable} ${notoSans.variable} ${pressStart.variable} ${shareTechMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full">{children}</body>
     </html>

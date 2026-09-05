@@ -36,8 +36,8 @@ const ProfileTabs = ({
   questMigrationPending,
   chapters,
   progressByChapter,
-  totalTiers,
-  doneTiers,
+  totalChapters,
+  doneChapters,
   sixSteps,
   nextStep,
 }: {
@@ -49,8 +49,8 @@ const ProfileTabs = ({
   questMigrationPending: boolean;
   chapters: ChapterContent[];
   progressByChapter: Record<string, ChapterProgress>;
-  totalTiers: number;
-  doneTiers: number;
+  totalChapters: number;
+  doneChapters: number;
   sixSteps: SixStepProgress[];
   nextStep: NextStepSuggestion;
 }) => {
@@ -101,13 +101,13 @@ const ProfileTabs = ({
             <div className="flex items-center justify-between text-sm mb-2">
               <span className="font-pixel text-[10px] text-dim">XP</span>
               <span className="font-tech">
-                {doneTiers} / {totalTiers} 關卡
+                {doneChapters} / {totalChapters} 章節
               </span>
             </div>
             <div className="xp-track h-2">
               <div
                 className="xp-fill"
-                style={{ width: `${totalTiers > 0 ? (doneTiers / totalTiers) * 100 : 0}%` }}
+                style={{ width: `${totalChapters > 0 ? (doneChapters / totalChapters) * 100 : 0}%` }}
               />
             </div>
           </div>

@@ -24,13 +24,6 @@ export const getChapterProgress = (map: ProgressMap, chapterId: string): Chapter
   return map[chapterId] ?? { easy: null, medium: null, hard: null };
 };
 
-export const isTierUnlocked = (progress: ChapterProgress, tier: Tier): boolean => {
-  const index = TIERS.indexOf(tier);
-  if (index === 0) return true;
-  const prevTier = TIERS[index - 1];
-  return Boolean(progress[prevTier]);
-};
-
 export const isTierCompleted = (progress: ChapterProgress, tier: Tier): boolean => {
   return Boolean(progress[tier]);
 };
@@ -39,6 +32,12 @@ export const completedTierCount = (progress: ChapterProgress): number => {
   return TIERS.filter((t) => progress[t]).length;
 };
 
-export const totalCompletedTiers = (map: ProgressMap, chapterIds: string[]): number => {
-  return chapterIds.reduce((sum, id) => sum + completedTierCount(getChapterProgress(map, id)), 0);
+// 簡單／中等／困難是同一個主題的三種不同深度練習，不是彼此的先修關卡——
+// 章節只要完成任一難度就算通關，不強制三個都要填、也不需要依序解鎖。
+export const isChapterComplete = (progress: ChapterProgress): boolean => {
+  return completedTierCount(progress) >= 1;
+};
+
+export const completedChapterCount = (map: ProgressMap, chapterIds: string[]): number => {
+  return chapterIds.filter((id) => isChapterComplete(getChapterProgress(map, id))).length;
 };

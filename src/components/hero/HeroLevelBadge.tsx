@@ -9,7 +9,7 @@ const LEVEL_DESCRIPTION: Record<HeroLevel, string> = {
 };
 
 const HeroLevelBadge = ({ info }: { info: HeroLevelInfo }) => {
-  const pct = info.totalTiers > 0 ? (info.totalCompleted / info.totalTiers) * 100 : 0;
+  const pct = info.totalChapters > 0 ? (info.completedChapters / info.totalChapters) * 100 : 0;
 
   return (
     <div className="panel p-5 min-w-0 flex flex-col items-center justify-center text-center gap-2 panel-glow">
@@ -20,7 +20,7 @@ const HeroLevelBadge = ({ info }: { info: HeroLevelInfo }) => {
         <div className="flex items-center justify-between font-tech text-xs text-dim">
           <span>XP</span>
           <span>
-            {info.totalCompleted} / {info.totalTiers} 關卡
+            {info.completedChapters} / {info.totalChapters} 章節
             {info.phase1Complete && info.level !== "opHero" ? "・Phase I 已全通" : ""}
           </span>
         </div>

@@ -60,9 +60,25 @@ export interface Quest {
   status: QuestStatus;
   cooldown_until: string | null;
   source_chapter_id: string | null;
+  due_date: string | null;
   created_at: string;
   updated_at: string;
 }
+
+// due_date 是 Postgres 的 date 欄位，存成純日期字串「YYYY-MM-DD」。
+// `new Date("YYYY-MM-DD")` 會把它當成 UTC 午夜解析，在 UTC 負時區（例如美洲）
+// 換算回本地時間會落在前一天晚上，導致「今天到期」被誤判成已逾期、
+// 顯示日期也會提早一天——一律拆解年月日自己組本地時間的 Date，不要交給
+// Date constructor 的字串解析猜時區。
+export const parseDueDate = (dueDate: string): Date => {
+  const [year, month, day] = dueDate.split("-").map(Number);
+  return new Date(year, month - 1, day);
+};
+
+export const isQuestOverdue = (quest: Pick<Quest, "status" | "due_date">): boolean => {
+  if (quest.status !== "active" || !quest.due_date) return false;
+  return parseDueDate(quest.due_date).getTime() < new Date().setHours(0, 0, 0, 0);
+};
 
 const COOLDOWN_DAYS = 14;
 

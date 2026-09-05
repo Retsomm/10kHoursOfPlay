@@ -263,6 +263,16 @@ input[type="range"] {
 }
 
 /*
+ * 整站沒有設定 color-scheme，瀏覽器原生表單元件（這裡是 date picker 的
+ * 日曆圖示與彈出面板）預設用淺色配色畫——圖示是黑色，疊在深色主題的輸入框
+ * 背景上幾乎看不見，看起來不像是個可以點的 date picker。
+ * 加上 color-scheme: dark 讓瀏覽器改用深色變體畫這個圖示與彈出面板。
+ */
+input[type="date"] {
+  color-scheme: dark;
+}
+
+/*
  * 等級路線的軌道線／發光填充——手機直排、sm 以上橫排共用同一組節點，
  * 靠 CSS 變數 --rank-progress（JS 只設定這個百分比，不直接碰 width/height）
  * 讓同一個進度值在兩種排列各自綁到對的維度，不用為兩種版面各生一份 DOM。
