@@ -36,7 +36,7 @@ const QuestsPage = async () => {
   };
 
   return (
-    <DashboardShell maxWidth="max-w-3xl">
+    <DashboardShell>
       <div>
         <p className="font-pixel text-[10px] text-dim">QUEST LOG</p>
         <h1 className="font-display text-2xl md:text-3xl font-bold mt-1">任務追蹤器</h1>
