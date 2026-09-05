@@ -262,6 +262,52 @@ input[type="range"] {
   accent-color: var(--color-accent);
 }
 
+/*
+ * 等級路線的軌道線／發光填充——手機直排、sm 以上橫排共用同一組節點，
+ * 靠 CSS 變數 --rank-progress（JS 只設定這個百分比，不直接碰 width/height）
+ * 讓同一個進度值在兩種排列各自綁到對的維度，不用為兩種版面各生一份 DOM。
+ */
+.rank-line {
+  position: absolute;
+  left: 13px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(180deg, #1f3a63 0 8px, transparent 8px 14px);
+}
+
+.rank-fill {
+  position: absolute;
+  left: 13px;
+  top: 0;
+  width: 2px;
+  height: var(--rank-progress, 0%);
+  background: linear-gradient(180deg, var(--color-accent), var(--color-gold));
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.9);
+  transition: height 0.25s ease;
+}
+
+@media (min-width: 640px) {
+  .rank-line {
+    left: 0;
+    right: 0;
+    top: 50%;
+    bottom: auto;
+    width: auto;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, #1f3a63 0 8px, transparent 8px 14px);
+  }
+
+  .rank-fill {
+    left: 0;
+    top: 50%;
+    width: var(--rank-progress, 0%);
+    height: 2px;
+    transition: width 0.25s ease;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-gold));
+  }
+}
+
 input:focus,
 textarea:focus,
 select:focus {

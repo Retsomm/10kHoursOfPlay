@@ -260,7 +260,7 @@ const Home = () => {
       if (track) {
         const r = track.getBoundingClientRect();
         const prog = Math.min(1, Math.max(0, (window.innerHeight * 0.78 - r.top) / Math.max(1, r.height * 0.85)));
-        if (rankFillRef.current) rankFillRef.current.style.width = `${(prog * 100).toFixed(1)}%`;
+        if (rankFillRef.current) rankFillRef.current.style.setProperty("--rank-progress", `${(prog * 100).toFixed(1)}%`);
         RANKS.forEach((_, i) => {
           const threshold = i / Math.max(1, RANKS.length - 1);
           const lit = prog >= threshold - 0.02;
@@ -295,7 +295,7 @@ const Home = () => {
   const t = sliderValue / 100;
 
   return (
-    <div style={{ position: "relative", overflow: "hidden" }} className="min-w-0">
+    <div style={{ position: "relative", overflow: "clip" }} className="min-w-0">
       {/* 背景視差層 */}
       <div
         ref={bgGridRef}
@@ -695,32 +695,34 @@ const Home = () => {
           <span className="flex-1 h-px" style={{ background: "linear-gradient(90deg,#1f3a63,transparent)" }} />
         </Reveal>
 
-        <div ref={rankTrackRef} className="relative py-8">
-          <div
-            className="absolute left-0 right-0 top-1/2 h-0.5"
-            style={{ background: "repeating-linear-gradient(90deg,#1f3a63 0 8px, transparent 8px 14px)" }}
-          />
-          <div ref={rankFillRef} className="absolute left-0 top-1/2 h-0.5" style={{ width: "0%", background: "linear-gradient(90deg,#38bdf8,#fbbf24)", boxShadow: "0 0 14px rgba(56,189,248,.9)", transition: "width .25s ease" }} />
-          <div className="relative flex justify-between gap-3 flex-wrap">
+        <div ref={rankTrackRef} className="relative py-2 sm:py-8">
+          <div className="rank-line" />
+          <div ref={rankFillRef} className="rank-fill" />
+          <div className="relative flex flex-col gap-8 sm:flex-row sm:justify-between sm:gap-3">
             {RANKS.map((rank, i) => (
-              <div key={rank.name} className="flex-1 min-w-[130px] flex flex-col items-center gap-2.5 text-center">
+              <div
+                key={rank.name}
+                className="flex items-start gap-4 text-left sm:flex-1 sm:min-w-[130px] sm:flex-col sm:items-center sm:gap-2.5 sm:text-center"
+              >
                 <span
                   ref={(el) => {
                     rankDotRefs.current[i] = el;
                   }}
-                  className="rounded-full border-2 block"
+                  className="shrink-0 rounded-full border-2 block"
                   style={{ width: 26, height: 26, borderColor: BRIGHT, background: "#050914", transition: "all .3s ease" }}
                 />
-                <span
-                  ref={(el) => {
-                    rankNameRefs.current[i] = el;
-                  }}
-                  className="font-display text-sm font-black tracking-wide whitespace-nowrap"
-                  style={{ color: DIM, transition: "color .3s ease" }}
-                >
-                  {rank.name}
-                </span>
-                <span className="text-sm leading-relaxed text-dim max-w-[190px]">{rank.desc}</span>
+                <div className="flex flex-col gap-1 sm:contents">
+                  <span
+                    ref={(el) => {
+                      rankNameRefs.current[i] = el;
+                    }}
+                    className="font-display text-sm font-black tracking-wide whitespace-nowrap"
+                    style={{ color: DIM, transition: "color .3s ease" }}
+                  >
+                    {rank.name}
+                  </span>
+                  <span className="text-sm leading-relaxed text-dim sm:max-w-[190px]">{rank.desc}</span>
+                </div>
               </div>
             ))}
           </div>
