@@ -1,8 +1,9 @@
-# 10,000 Hours of Play
+<img width="1200" height="366" alt="theme-card-inline" src="https://github.com/user-attachments/assets/286c65ec-eac5-4ff8-a0fd-d3d17f79a393" />
 
-把《10,000小時的遊戲》工作手冊改造成一個「英雄角色卡」成長儀表板。使用者透過「簡單→中等→困難」循序解鎖的問答，逐步認識自己（Phase I）、持續成長（Phase II），並跨裝置同步進度、追蹤任務與成長軌跡。
+## 把《10,000小時的遊戲》工作手冊改造成一個「英雄角色卡」成長儀表板。
 
-**正式站：** https://10k-hours-of-play.vercel.app/
+### 使用者透過「簡單→中等→困難」循序解鎖的問答，逐步認識自己（Phase I）、持續成長（Phase II），並跨裝置同步進度、追蹤任務與成長軌跡。
+
 
 ## 功能總覽
 
